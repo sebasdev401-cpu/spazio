@@ -99,7 +99,7 @@ export default function ContactSection() {
               fontFamily="heading"
               fontSize={{ base: '5xl', md: '7xl', lg: '8xl' }}
               fontWeight="300"
-              fontStyle="italic"
+              
               color="white"
               lineHeight="0.9"
             >
@@ -196,7 +196,7 @@ export default function ContactSection() {
                 fontFamily="heading"
                 fontSize={{ base: '2xl', md: '3xl' }}
                 fontWeight="300"
-                fontStyle="italic"
+                
                 target="_blank"
                 color="white"
                 opacity={0.6}

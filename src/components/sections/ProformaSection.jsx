@@ -55,7 +55,7 @@ export default function ProformaSection() {
             fontFamily="heading"
             fontSize={{ base: '4xl', md: '6xl' }}
             fontWeight="300"
-            fontStyle="italic"
+            
             color="white"
             lineHeight="1"
           >
@@ -68,7 +68,7 @@ export default function ProformaSection() {
             fontFamily="heading"
             fontSize={{ base: 'xl', md: '2xl' }}
             fontWeight="300"
-            fontStyle="italic"
+            
             color="white"
             lineHeight="1.4"
             maxW="380px"

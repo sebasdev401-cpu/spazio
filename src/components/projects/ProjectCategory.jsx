@@ -56,7 +56,7 @@ export default function ProjectCategory({ category, onSelectProject }) {
             fontFamily="heading"
             fontSize={{ base: '4xl', md: '6xl' }}
             fontWeight="300"
-            fontStyle="italic"
+            
             color="white"
             lineHeight="1"
           >

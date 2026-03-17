@@ -99,7 +99,7 @@ export default function ProjectViewer({ project, onClose }) {
           fontFamily="heading"
           fontSize={{ base: '4xl', md: '6xl', lg: '8xl' }}
           fontWeight="300"
-          fontStyle="italic"
+          
           color="white"
           lineHeight="0.95"
           mb={{ base: 10, md: 16 }}
@@ -154,7 +154,7 @@ export default function ProjectViewer({ project, onClose }) {
                   <Text fontFamily="body" fontSize="9px" letterSpacing="0.3em" textTransform="uppercase" color="whiteAlpha.400" mb={2}>
                     {item.label}
                   </Text>
-                  <Text fontFamily="heading" fontSize="xl" fontWeight="300" fontStyle="italic" color="white">
+                  <Text fontFamily="heading" fontSize="xl" fontWeight="300"  color="white">
                     {item.value}
                   </Text>
                 </Box>

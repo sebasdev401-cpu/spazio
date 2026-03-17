@@ -74,7 +74,7 @@ export default function AboutSection() {
           fontFamily="heading"
           fontSize={{ base: '4xl', md: '6xl' }}
           fontWeight="300"
-          fontStyle="italic"
+          
           color="white"
           lineHeight="1"
         >
@@ -101,7 +101,7 @@ export default function AboutSection() {
             fontFamily="heading"
             fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }}
             fontWeight="300"
-            fontStyle="italic"
+            
             color="white"
             lineHeight="1.3"
           >
@@ -126,7 +126,7 @@ export default function AboutSection() {
                   fontFamily="heading"
                   fontSize="3xl"
                   fontWeight="300"
-                  fontStyle="italic"
+                  
                   color="white"
                 >
                   {stat.value}
@@ -221,7 +221,7 @@ export default function AboutSection() {
                   fontFamily="heading"
                   fontSize={{ base: 'xl', md: '2xl' }}
                   fontWeight="300"
-                  fontStyle="italic"
+                  
                   color="white"
                   lineHeight="1.2"
                 >

@@ -55,7 +55,7 @@ export default function ProjectCard({ title, year, category, images, onClick }) 
           fontSize={{ base: 'lg', md: '2xl' }}
           fontWeight="300"
           color="white"
-          fontStyle="italic"
+          
           lineHeight="1.1"
         >
           {title}
