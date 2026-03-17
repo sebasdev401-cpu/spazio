@@ -44,7 +44,7 @@ export default function ContactSection() {
         left="0"
         right="0"
         bottom="0"
-        backgroundImage="url('https://placehold.co/1920x1080/0d0d0b/888884?text=render_contacto_1')"
+        backgroundImage="url('/images/renders/IMG_5750.JPG')"
         backgroundSize="cover"
         backgroundPosition="center"
         backgroundRepeat="no-repeat"

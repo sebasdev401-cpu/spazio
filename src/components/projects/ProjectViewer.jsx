@@ -3,14 +3,13 @@ import { useEffect, useState } from 'react'
 
 export default function ProjectViewer({ project, onClose }) {
   const [visible, setVisible] = useState(false)
+  const images = project.images || []
 
-  // Entrada animada
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 20)
     return () => clearTimeout(t)
   }, [])
 
-  // Cerrar con Escape
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === 'Escape') handleClose()
@@ -19,18 +18,19 @@ export default function ProjectViewer({ project, onClose }) {
     return () => window.removeEventListener('keydown', handleKey)
   }, [])
 
-  // Bloquear scroll del body
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = ''
-    }
+    return () => { document.body.style.overflow = '' }
   }, [])
 
   const handleClose = () => {
     setVisible(false)
     setTimeout(onClose, 500)
   }
+
+  // Primera imagen: render principal junto al texto
+  // Resto de imágenes: se muestran debajo una a una
+  const [coverImage, ...extraImages] = images
 
   return (
     <Box
@@ -40,7 +40,7 @@ export default function ProjectViewer({ project, onClose }) {
       opacity={visible ? 1 : 0}
       transition="opacity 0.5s ease"
     >
-      {/* Fondo oscuro */}
+      {/* Fondo */}
       <Box
         position="absolute"
         inset="0"
@@ -48,7 +48,7 @@ export default function ProjectViewer({ project, onClose }) {
         onClick={handleClose}
       />
 
-      {/* Contenido */}
+      {/* Scroll container */}
       <Box
         position="absolute"
         inset="0"
@@ -74,42 +74,22 @@ export default function ProjectViewer({ project, onClose }) {
           transition="opacity 0.3s ease"
         >
           <Box
-            width="28px"
-            height="1px"
-            bg="white"
+            width="28px" height="1px" bg="white"
             transform="rotate(45deg) translateY(3.5px)"
           />
           <Box
-            width="28px"
-            height="1px"
-            bg="white"
+            width="28px" height="1px" bg="white"
             transform="rotate(-45deg) translateY(-3.5px)"
           />
         </Box>
 
-        {/* Número + categoría */}
-        <HStack
-          mb={{ base: 6, md: 10 }}
-          spacing={6}
-          opacity={0.5}
-        >
-          <Text
-            fontFamily="body"
-            fontSize="10px"
-            letterSpacing="0.35em"
-            textTransform="uppercase"
-            color="white"
-          >
+        {/* Categoría + número */}
+        <HStack mb={{ base: 6, md: 10 }} spacing={6} opacity={0.5}>
+          <Text fontFamily="body" fontSize="10px" letterSpacing="0.35em" textTransform="uppercase" color="white">
             {String(project.id).padStart(2, '0')}
           </Text>
           <Box width="30px" height="1px" bg="whiteAlpha.400" />
-          <Text
-            fontFamily="body"
-            fontSize="10px"
-            letterSpacing="0.35em"
-            textTransform="uppercase"
-            color="white"
-          >
+          <Text fontFamily="body" fontSize="10px" letterSpacing="0.35em" textTransform="uppercase" color="white">
             {project.category}
           </Text>
         </HStack>
@@ -128,34 +108,34 @@ export default function ProjectViewer({ project, onClose }) {
           {project.title}
         </Text>
 
-        {/* Bloque 1: render izquierda + texto derecha */}
+        {/* Bloque 1: imagen principal + ficha + descripción */}
         <Grid
           templateColumns={{ base: '1fr', md: '1fr 1fr' }}
           gap={{ base: 8, md: 12 }}
           mb={{ base: 10, md: 16 }}
           alignItems="start"
         >
-          {/* Render — misma imagen que la card */}
-          <Box
-            width="100%"
-            height={{ base: '280px', md: '520px' }}
-            overflow="hidden"
-            position="relative"
-            flexShrink={0}
-          >
+          {/* Imagen principal (images[0]) */}
+          {coverImage && (
             <Box
-              position="absolute"
-              inset="0"
-              backgroundImage={`url('${project.image}')`}
-              backgroundSize="cover"
-              backgroundPosition="center"
-              filter="brightness(0.85)"
-            />
-          </Box>
+              width="100%"
+              height={{ base: '280px', md: '520px' }}
+              overflow="hidden"
+              position="relative"
+            >
+              <Box
+                position="absolute"
+                inset="0"
+                backgroundImage={`url('${coverImage}')`}
+                backgroundSize="cover"
+                backgroundPosition="center"
+                filter="brightness(0.85)"
+              />
+            </Box>
+          )}
 
-          {/* Texto derecha */}
+          {/* Ficha técnica + descripción */}
           <VStack align="flex-start" spacing={8} pt={{ base: 0, md: 4 }}>
-            {/* Ficha técnica */}
             <Grid
               templateColumns="1fr 1fr"
               gap={6}
@@ -164,148 +144,68 @@ export default function ProjectViewer({ project, onClose }) {
               borderBottom="1px solid"
               borderColor="whiteAlpha.100"
             >
-              <Box>
-                <Text
-                  fontFamily="body"
-                  fontSize="9px"
-                  letterSpacing="0.3em"
-                  textTransform="uppercase"
-                  color="whiteAlpha.400"
-                  mb={2}
-                >
-                  Año
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  fontSize="xl"
-                  fontWeight="300"
-                  fontStyle="italic"
-                  color="white"
-                >
-                  {project.year}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontFamily="body"
-                  fontSize="9px"
-                  letterSpacing="0.3em"
-                  textTransform="uppercase"
-                  color="whiteAlpha.400"
-                  mb={2}
-                >
-                  Área
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  fontSize="xl"
-                  fontWeight="300"
-                  fontStyle="italic"
-                  color="white"
-                >
-                  {project.area}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontFamily="body"
-                  fontSize="9px"
-                  letterSpacing="0.3em"
-                  textTransform="uppercase"
-                  color="whiteAlpha.400"
-                  mb={2}
-                >
-                  Ubicación
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  fontSize="xl"
-                  fontWeight="300"
-                  fontStyle="italic"
-                  color="white"
-                >
-                  {project.location}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontFamily="body"
-                  fontSize="9px"
-                  letterSpacing="0.3em"
-                  textTransform="uppercase"
-                  color="whiteAlpha.400"
-                  mb={2}
-                >
-                  Tipo
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  fontSize="xl"
-                  fontWeight="300"
-                  fontStyle="italic"
-                  color="white"
-                >
-                  {project.category}
-                </Text>
-              </Box>
+              {[
+                { label: 'Año', value: project.year },
+                { label: 'Área', value: project.area },
+                { label: 'Ubicación', value: project.location },
+                { label: 'Tipo', value: project.category },
+              ].map((item) => (
+                <Box key={item.label}>
+                  <Text fontFamily="body" fontSize="9px" letterSpacing="0.3em" textTransform="uppercase" color="whiteAlpha.400" mb={2}>
+                    {item.label}
+                  </Text>
+                  <Text fontFamily="heading" fontSize="xl" fontWeight="300" fontStyle="italic" color="white">
+                    {item.value}
+                  </Text>
+                </Box>
+              ))}
             </Grid>
 
-            {/* Descripción */}
-            <Text
-              fontFamily="body"
-              fontSize={{ base: 'xs', md: 'sm' }}
-              fontWeight="300"
-              lineHeight="2"
-              color="whiteAlpha.700"
-            >
+            <Text fontFamily="body" fontSize={{ base: 'xs', md: 'sm' }} fontWeight="300" lineHeight="2" color="whiteAlpha.700">
               {project.description}
             </Text>
           </VStack>
         </Grid>
 
-        {/* Bloque 2: imagen detalle fullwidth */}
-        <Box
-          width="100%"
-          height={{ base: '220px', md: '480px', lg: '600px' }}
-          overflow="hidden"
-          position="relative"
-          mb={{ base: 10, md: 16 }}
-        >
-          <Box
-            position="absolute"
-            inset="0"
-            backgroundImage={`url('${project.imageDetail}')`}
-            backgroundSize="cover"
-            backgroundPosition="center"
-            filter="brightness(0.8)"
-          />
-        </Box>
+        {/* Imágenes extra — dinámicas */}
+        {extraImages.map((img, index) => (
+          <Box key={index}>
+            {/* Imagen fullwidth */}
+            <Box
+              width="100%"
+              height={{ base: '220px', md: '480px', lg: '580px' }}
+              overflow="hidden"
+              position="relative"
+              mb={{ base: 8, md: 12 }}
+            >
+              <Box
+                position="absolute"
+                inset="0"
+                backgroundImage={`url('${img}')`}
+                backgroundSize="cover"
+                backgroundPosition="center"
+                filter="brightness(0.8)"
+              />
+            </Box>
 
-        {/* Bloque 3: texto final */}
-        <Grid
-          templateColumns={{ base: '1fr', md: '1fr 1fr' }}
-          gap={{ base: 6, md: 20 }}
-          mb={{ base: 16, md: 20 }}
-        >
-          <Box />
-          <Text
-            fontFamily="body"
-            fontSize={{ base: 'xs', md: 'sm' }}
-            fontWeight="300"
-            lineHeight="2"
-            color="whiteAlpha.600"
-          >
-            {project.descriptionExtra}
-          </Text>
-        </Grid>
+            {/* Texto extra solo debajo de la última imagen */}
+            {index === extraImages.length - 1 && project.descriptionExtra && (
+              <Grid
+                templateColumns={{ base: '1fr', md: '1fr 1fr' }}
+                gap={{ base: 6, md: 20 }}
+                mb={{ base: 12, md: 16 }}
+              >
+                <Box />
+                <Text fontFamily="body" fontSize={{ base: 'xs', md: 'sm' }} fontWeight="300" lineHeight="2" color="whiteAlpha.600">
+                  {project.descriptionExtra}
+                </Text>
+              </Grid>
+            )}
+          </Box>
+        ))}
 
-        {/* Pie del modal */}
-        <Box
-          borderTop="1px solid"
-          borderColor="whiteAlpha.100"
-          pt={8}
-          pb={4}
-        >
+        {/* Pie */}
+        <Box borderTop="1px solid" borderColor="whiteAlpha.100" pt={8} pb={4}>
           <Text
             fontFamily="body"
             fontSize="10px"

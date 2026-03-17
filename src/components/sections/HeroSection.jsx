@@ -31,7 +31,7 @@ export default function HeroSection() {
         left="0"
         right="0"
         bottom="0"
-        backgroundImage="url('https://placehold.co/1920x1080/111110/888884?text=render_inicio_1')"
+        backgroundImage="url('images/renders/IMG_1658.jpg')"
         backgroundSize="cover"
         backgroundPosition="center"
         backgroundRepeat="no-repeat"

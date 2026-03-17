@@ -11,8 +11,8 @@ export default function Landing() {
     <div className="scroll-container">
       <Navbar />
       <HeroSection />
-      <ProjectsSection />
       <AboutSection />
+      <ProjectsSection />
       <ProformaSection />
       <ContactSection />
       <Footer />

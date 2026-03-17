@@ -3,19 +3,22 @@ import { useEffect, useRef, useState } from 'react'
 
 const team = [
   {
-    name: 'Alejandro Mora',
-    role: 'Director Creativo',
-    image: 'https://placehold.co/400x500/111110/888884?text=render_quienes_1',
+    name: 'Mónica García, Arq. MSc',
+    role: 'Arquitecta',
+    description: [
+      'Arquitecta ecuatoriana con formación y experiencia internacionales en Europa. Máster en Arquitectura para la Sustentabilidad del Politecnico de Torino, graduada con Summa cum laude (110/100).',
+      'Su trabajo se centra en proyectos residenciales e interiores, combinando estética, funcionalidad y sostenibilidad, desarrollando proyectos de forma remota para clientes de distintos países.',
+    ],
+    image: 'images/renders/Foto_monica.jpg',
   },
   {
-    name: 'Valentina Cruz',
-    role: 'Arquitecta Senior',
-    image: 'https://placehold.co/400x500/1a1a18/888884?text=render_quienes_2',
-  },
-  {
-    name: 'Mateo Ríos',
-    role: 'Diseño de Interiores',
-    image: 'https://placehold.co/400x500/222220/888884?text=render_quienes_3',
+    name: 'Francisco Serrano, Arq. M.Arch / M.I.D.',
+    role: 'Arquitecto',
+    description: [
+      'Arquitecto ecuatoriano, máster en Diseño de Interiores y Mobiliario por la Escuela de Diseño de Florencia. Su enfoque se basa en espacios funcionales, coherentes y atemporales.',
+      'Cuenta con experiencia en proyectos residenciales e interiores, con especial atención al diseño a medida, materiales, iluminación y confort, trabajando a nivel internacional.',
+    ],
+    image: 'images/renders/Foto_francisco.jpg',
   },
 ]
 
@@ -80,7 +83,7 @@ export default function AboutSection() {
         <Box width="40px" height="1px" bg="whiteAlpha.300" mt={4} />
       </VStack>
 
-      {/* Bloque principal: texto izquierda + imagen derecha */}
+      {/* Bloque principal */}
       <Grid
         templateColumns={{ base: '1fr', lg: '1fr 1fr' }}
         gap={16}
@@ -102,7 +105,7 @@ export default function AboutSection() {
             color="white"
             lineHeight="1.3"
           >
-            Arquitectura que nace del lugar, la luz y quienes la habitan.
+            Diseño con esencia italiana, creado para el mundo.
           </Text>
 
           <Text
@@ -113,27 +116,8 @@ export default function AboutSection() {
             color="whiteAlpha.700"
             maxW="480px"
           >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad
-            minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur.
+            Somos un estudio remoto de arquitectura e interiorismo que trabaja a nivel internacional.
           </Text>
-
-          <Text
-            fontFamily="body"
-            fontSize="sm"
-            fontWeight="300"
-            lineHeight="2"
-            color="whiteAlpha.700"
-            maxW="480px"
-          >
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-            officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde
-            omnis iste natus error sit voluptatem accusantium doloremque
-            laudantium.
-          </Text>
-
           {/* Stats */}
           <HStack spacing={12} pt={4}>
             {stats.map((stat, i) => (
@@ -172,12 +156,11 @@ export default function AboutSection() {
           <Box
             position="absolute"
             inset="0"
-            backgroundImage="url('https://placehold.co/900x1100/111110/888884?text=render_quienes_principal')"
+            backgroundImage="url('images/renders/Florence%20proposal%20photoshoot-71.jpg')"
             backgroundSize="cover"
             backgroundPosition="center"
             filter="brightness(0.8)"
           />
-          {/* Línea decorativa */}
           <Box
             position="absolute"
             top="24px"
@@ -206,21 +189,21 @@ export default function AboutSection() {
         </Text>
 
         <Grid
-          templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
-          gap={6}
+          templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+          gap={{ base: 16, md: 12 }}
         >
           {team.map((member, index) => (
             <Box
               key={index}
               className={`fade-up ${visible ? 'visible' : ''}`}
-              style={{ transitionDelay: `${0.5 + index * 0.12}s` }}
+              style={{ transitionDelay: `${0.5 + index * 0.15}s` }}
             >
               {/* Foto */}
               <Box
-                height="320px"
+                height={{ base: '340px', md: '420px' }}
                 overflow="hidden"
                 position="relative"
-                mb={4}
+                mb={6}
               >
                 <Box
                   position="absolute"
@@ -229,31 +212,47 @@ export default function AboutSection() {
                   backgroundSize="cover"
                   backgroundPosition="center"
                   filter="brightness(0.75) grayscale(20%)"
-                  transition="transform 0.7s ease, filter 0.7s ease"
-                  _groupHover={{ transform: 'scale(1.04)', filter: 'brightness(0.85)' }}
                 />
               </Box>
 
               {/* Info */}
-              <VStack align="flex-start" spacing={1}>
+              <VStack align="flex-start" spacing={3}>
                 <Text
                   fontFamily="heading"
-                  fontSize="lg"
+                  fontSize={{ base: 'xl', md: '2xl' }}
                   fontWeight="300"
                   fontStyle="italic"
                   color="white"
+                  lineHeight="1.2"
                 >
                   {member.name}
                 </Text>
                 <Text
                   fontFamily="body"
-                  fontSize="10px"
-                  letterSpacing="0.2em"
+                  fontSize="9px"
+                  letterSpacing="0.25em"
                   textTransform="uppercase"
                   color="whiteAlpha.500"
                 >
                   {member.role}
                 </Text>
+                <Box width="30px" height="1px" bg="whiteAlpha.200" my={1} />
+
+                {/* Descripción en párrafos separados */}
+                <VStack align="flex-start" spacing={3}>
+                  {member.description.map((paragraph, i) => (
+                    <Text
+                      key={i}
+                      fontFamily="body"
+                      fontSize="xs"
+                      fontWeight="300"
+                      lineHeight="1.85"
+                      color="whiteAlpha.550"
+                    >
+                      {paragraph}
+                    </Text>
+                  ))}
+                </VStack>
               </VStack>
             </Box>
           ))}
