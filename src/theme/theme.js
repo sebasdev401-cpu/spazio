@@ -14,7 +14,7 @@ const config = defineConfig({
         },
       },
       fonts: {
-        heading: { value: `'The Seasons', Georgia, serif` },
+        heading: { value: `'Times New Roman', Times, serif` },
         body: { value: `'Montserrat', sans-serif` },
       },
     },
