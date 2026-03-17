@@ -3,7 +3,9 @@ import { useNavbarVisibility } from '../../hooks/useNavbarVisibility'
 
 const links = [
   { label: 'Inicio', href: '#inicio' },
-  { label: 'Proyectos', href: '#proyectos' },
+  { label: 'Arquitectónicos', href: '#arquitectonicos' },
+  { label: 'Interiores', href: '#interiores' },
+  { label: 'Inmobiliarios', href: '#inmobiliarios' },
   { label: 'Quiénes Somos', href: '#quienes' },
   { label: 'Proforma', href: '#proforma' },
   { label: 'Contacto', href: '#contacto' },
