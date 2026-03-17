@@ -8,7 +8,7 @@ const contactInfo = [
 ]
 
 const socials = [
-  { label: 'Instagram', href: '#' },
+  { label: 'Instagram', href: 'https://www.instagram.com/spazio.arch.ec?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==' },
   { label: 'Behance', href: '#' },
   { label: 'LinkedIn', href: '#' },
 ]
@@ -197,6 +197,7 @@ export default function ContactSection() {
                 fontSize={{ base: '2xl', md: '3xl' }}
                 fontWeight="300"
                 fontStyle="italic"
+                target="_blank"
                 color="white"
                 opacity={0.6}
                 textDecoration="none"

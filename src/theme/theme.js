@@ -14,8 +14,8 @@ const config = defineConfig({
         },
       },
       fonts: {
-        heading: { value: `'Cormorant Garamond', Georgia, serif` },
-        body: { value: `'Raleway', sans-serif` },
+        heading: { value: `'The Seasons', Georgia, serif` },
+        body: { value: `'Montserrat', sans-serif` },
       },
     },
   },
