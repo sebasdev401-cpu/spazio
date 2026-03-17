@@ -166,7 +166,7 @@ export default function Navbar() {
                 fontFamily="heading"
                 fontSize="4xl"
                 fontWeight="300"
-                fontStyle="italic"
+                
                 color="white"
                 textDecoration="none"
                 opacity={menuOpen ? 1 : 0}

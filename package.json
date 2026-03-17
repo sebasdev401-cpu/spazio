@@ -15,11 +15,13 @@
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.2.2",
     "axios": "^1.13.6",
+    "d3": "^7.9.0",
     "framer-motion": "^12.37.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.71.2",
     "resend": "^6.9.4",
+    "topojson-client": "^3.1.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
