@@ -119,17 +119,17 @@ export default function ProjectViewer({ project, onClose }) {
           {coverImage && (
             <Box
               width="100%"
-              height={{ base: '280px', md: '520px' }}
               overflow="hidden"
               position="relative"
             >
               <Box
-                position="absolute"
-                inset="0"
-                backgroundImage={`url('${coverImage}')`}
-                backgroundSize="cover"
-                backgroundPosition="center"
-                filter="brightness(0.85)"
+                as="img"
+                src={coverImage}
+                alt={project.title}
+                width="100%"
+                height="auto"
+                display="block"
+                style={{ filter: 'brightness(0.85)' }}
               />
             </Box>
           )}
@@ -170,25 +170,23 @@ export default function ProjectViewer({ project, onClose }) {
         {/* Imágenes extra — dinámicas */}
         {extraImages.map((img, index) => (
           <Box key={index}>
-            {/* Imagen fullwidth */}
             <Box
               width="100%"
-              height={{ base: '220px', md: '480px', lg: '580px' }}
               overflow="hidden"
               position="relative"
               mb={{ base: 8, md: 12 }}
             >
               <Box
-                position="absolute"
-                inset="0"
-                backgroundImage={`url('${img}')`}
-                backgroundSize="cover"
-                backgroundPosition="center"
-                filter="brightness(0.8)"
+                as="img"
+                src={img}
+                alt={`${project.title} ${index + 2}`}
+                width="100%"
+                height="auto"
+                display="block"
+                style={{ filter: 'brightness(0.8)' }}
               />
             </Box>
 
-            {/* Texto extra solo debajo de la última imagen */}
             {index === extraImages.length - 1 && project.descriptionExtra && (
               <Grid
                 templateColumns={{ base: '1fr', md: '1fr 1fr' }}

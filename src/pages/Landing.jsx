@@ -7,12 +7,12 @@ import AboutSection from '../components/sections/AboutSection'
 import ProformaSection from '../components/sections/ProformaSection'
 import ContactSection from '../components/sections/ContactSection'
 import ProjectViewer from '../components/projects/ProjectViewer'
-
-// Importa todos los proyectos para buscar por id
 import { allProjects } from '../data/all-projects'
+import { useSectionTransition } from '../hooks/useSectionTransition'
 
 export default function Landing() {
   const [selectedProject, setSelectedProject] = useState(null)
+  useSectionTransition()
 
   const handleOpenProject = (projectId) => {
     const project = allProjects.find((p) => p.id === projectId)

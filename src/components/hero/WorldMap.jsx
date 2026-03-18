@@ -13,6 +13,8 @@ const COUNTRY_CENTERS = {
   SAU: [45.0, 24.0], MAR: [-7.0, 31.8], USA: [-98.0, 38.0],
 }
 
+
+
 export default function WorldMap({ onSelectCountry }) {
   const svgRef = useRef(null)
   const containerRef = useRef(null)
@@ -22,7 +24,8 @@ export default function WorldMap({ onSelectCountry }) {
     if (!svgRef.current || !containerRef.current) return
 
     const container = containerRef.current
-    const width = container.clientWidth
+    const isMobile = window.innerWidth < 768
+    const width = isMobile ? 700 : container.clientWidth
     const height = container.clientHeight
 
     if (width === 0 || height === 0) return
@@ -35,21 +38,92 @@ export default function WorldMap({ onSelectCountry }) {
       .style('display', 'block')
       .style('background', '#0A0A0A')
 
-    const isMobile = width < 768
+    const pathGenerator = d3.geoPath()
 
-    const projection = d3.geoNaturalEarth1()
-      .scale(isMobile ? width / 5.5 : width / 6.5)
-      .translate([width / 2, isMobile ? height / 2.2 : height / 2])
-
-    const pathGenerator = d3.geoPath().projection(projection)
-
-    const numericToCode = Object.fromEntries(
-      Object.entries(COUNTRY_NUMERIC).map(([k, v]) => [v, k])
-    )
-
-    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then((world) => {
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then((world) => {
       const countries = topojson.feature(world, world.objects.countries)
 
+      // Filtramos Antártida y polo sur
+      const filteredFeatures = {
+        type: 'FeatureCollection',
+        features: countries.features.filter((f) => {
+          const bounds = d3.geoBounds(f)
+          return bounds[0][1] > -56
+        }),
+      }
+
+      const isMobile = window.innerWidth < 768
+      const width = isMobile ? 900 : container.clientWidth
+      const height = isMobile ? 600 : container.clientHeight
+
+      // Bounding box zona habitada
+      const boundsGeoJSON = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [-180, 75],
+            [180, 75],
+            [180, -56],
+            [-180, -56],
+            [-180, 75],
+          ]],
+        },
+      }
+
+      const projection = d3.geoNaturalEarth1()
+        .fitSize([width, height], boundsGeoJSON)
+
+      pathGenerator.projection(projection)
+
+      const numericToCode = Object.fromEntries(
+        Object.entries(COUNTRY_NUMERIC).map(([k, v]) => [v, k])
+      )
+
+      const COUNTRY_ZOOM_CENTER = {
+        ECU: [-78.5, -1.8],
+        CHE: [8.2, 46.8],
+        ITA: [12.5, 42.5],
+        SAU: [45.0, 24.0],
+        MAR: [-7.0, 31.8],
+        USA: [-98.0, 38.0],
+      }
+
+      const zoomToCountry = (code) => {
+        const coords = COUNTRY_ZOOM_CENTER[code]
+        if (!coords) return
+
+        const currentScale = projection.scale()
+        const currentTranslate = projection.translate()
+        const projected = projection(coords)
+
+        const zoomScale = currentScale * 3
+        const zoomTranslate = [
+          currentTranslate[0] + (width / 2 - projected[0]) * 3,
+          currentTranslate[1] + (height / 2 - projected[1]) * 3,
+        ]
+
+        const zoomedProjection = projection
+          .scale(zoomScale)
+          .translate(zoomTranslate)
+
+        const zoomedPath = d3.geoPath().projection(zoomedProjection)
+
+        // Ocultar círculos durante el zoom
+        svg.selectAll('circle')
+          .transition()
+          .duration(300)
+          .attr('opacity', 0)
+
+        // Zoom en paths
+        svg.selectAll('path')
+          .transition()
+          .duration(800)
+          .ease(d3.easeCubicInOut)
+          .attr('d', zoomedPath)
+
+        setTimeout(() => onSelectCountry(code), 850)
+      }
       svg.selectAll('path')
         .data(countries.features)
         .enter()
@@ -63,7 +137,6 @@ export default function WorldMap({ onSelectCountry }) {
         .attr('stroke-width', isMobile ? 0.2 : 0.3)
         .style('cursor', (d) => numericToCode[+d.id] ? 'pointer' : 'default')
         .style('transition', 'fill 0.3s ease')
-        // Desktop — hover
         .on('mouseenter', function (event, d) {
           const code = numericToCode[+d.id]
           if (!code) return
@@ -89,23 +162,23 @@ export default function WorldMap({ onSelectCountry }) {
         })
         .on('click', function (event, d) {
           const code = numericToCode[+d.id]
-          if (code) onSelectCountry(code)
+          if (!code) return
+          zoomToCountry(code)
         })
-        // Mobile — touch
         .on('touchstart', function (event, d) {
-            const code = numericToCode[+d.id]
-            if (!code) return
-            if (event.cancelable) event.preventDefault()
-            const touch = event.touches[0]
-            d3.select(this).attr('fill', '#F7F7F5')
-            setTooltip({
-                visible: true,
-                x: touch.clientX,
-                y: touch.clientY,
-                name: projectsByCountry[code].name,
-                count: projectsByCountry[code].projects.length,
-            })
-            })
+          const code = numericToCode[+d.id]
+          if (!code) return
+          if (event.cancelable) event.preventDefault()
+          const touch = event.touches[0]
+          d3.select(this).attr('fill', '#F7F7F5')
+          setTooltip({
+            visible: true,
+            x: touch.clientX,
+            y: touch.clientY,
+            name: projectsByCountry[code].name,
+            count: projectsByCountry[code].projects.length,
+          })
+        })
         .on('touchend', function (event, d) {
           const code = numericToCode[+d.id]
           if (!code) return
@@ -134,22 +207,19 @@ export default function WorldMap({ onSelectCountry }) {
           .on('mouseleave', function () {
             d3.select(this).attr('r', isMobile ? 4 : 3).attr('opacity', 0.7)
           })
-          .on('click', () => onSelectCountry(code))
+          .on('click', () => zoomToCountry(code))
           .on('touchend', (event) => {
             if (event.cancelable) event.preventDefault()
-            onSelectCountry(code)
+            zoomToCountry(code)
           })
       })
     })
   }, [onSelectCountry])
 
   useEffect(() => {
-    // Pequeño delay para asegurar que el contenedor tiene dimensiones
     const timeout = setTimeout(drawMap, 100)
-
     const handleResize = () => drawMap()
     window.addEventListener('resize', handleResize)
-
     return () => {
       clearTimeout(timeout)
       window.removeEventListener('resize', handleResize)
@@ -163,10 +233,17 @@ export default function WorldMap({ onSelectCountry }) {
       width="100%"
       height="100%"
       bg="#0A0A0A"
+      overflowX={{ base: 'auto', md: 'hidden' }}
     >
-      <svg ref={svgRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+      <Box
+        position="relative"
+        width={{ base: '700px', md: '100%' }}
+        height="100%"
+      >
+        <svg ref={svgRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+      </Box>
 
-      {/* Tooltip — desktop */}
+      {/* Tooltip desktop */}
       {tooltip.visible && (
         <Box
           position="fixed"
@@ -178,6 +255,7 @@ export default function WorldMap({ onSelectCountry }) {
           px={4}
           py={2}
           pointerEvents="none"
+          display={{ base: 'none', md: 'block' }}
         >
           <Text fontFamily="body" fontSize="10px" letterSpacing="0.2em" textTransform="uppercase" color="white">
             {tooltip.name}
@@ -188,10 +266,10 @@ export default function WorldMap({ onSelectCountry }) {
         </Box>
       )}
 
-      {/* Tooltip mobile — centrado abajo */}
+      {/* Tooltip mobile */}
       {tooltip.visible && (
         <Box
-          position="absolute"
+          position="fixed"
           bottom="140px"
           left="50%"
           transform="translateX(-50%)"

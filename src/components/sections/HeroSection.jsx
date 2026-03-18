@@ -6,8 +6,10 @@ import ScrollIndicator from '../ui/ScrollIndicator'
 
 export default function HeroSection({ onOpenProject }) {
   const textRef = useRef(null)
-  const [selectedCountry, setSelectedCountry] = useState(null)
   const [mapVisible, setMapVisible] = useState(false)
+  const [selectedCountry, setSelectedCountry] = useState(null)
+  const [displayedCountry, setDisplayedCountry] = useState(null)
+  const [mapOpacity, setMapOpacity] = useState(1)
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -17,8 +19,24 @@ export default function HeroSection({ onOpenProject }) {
     return () => clearTimeout(timeout)
   }, [])
 
-  const handleSelectCountry = (code) => setSelectedCountry(code)
-  const handleBack = () => setSelectedCountry(null)
+  const handleSelectCountry = (code) => {
+    setMapOpacity(0)
+    setTimeout(() => {
+      setSelectedCountry(code)
+      setDisplayedCountry(code)
+      setTimeout(() => setMapOpacity(1), 50)
+    }, 600)
+  }
+
+  const handleBack = () => {
+    setMapOpacity(0)
+    setTimeout(() => {
+      setSelectedCountry(null)
+      setDisplayedCountry(null)
+      setTimeout(() => setMapOpacity(1), 50)
+    }, 600)
+  }
+
   const handleSelectProject = (projectId) => {
     if (onOpenProject) onOpenProject(projectId)
   }
@@ -26,13 +44,10 @@ export default function HeroSection({ onOpenProject }) {
   const handleScrollDown = () => {
     const next = document.querySelector('#arquitectonicos')
     if (!next) return
-    
-    // Intenta con scroll-container primero
     const container = document.querySelector('.scroll-container')
     if (container && container.scrollHeight > container.clientHeight) {
       container.scrollTo({ top: next.offsetTop, behavior: 'smooth' })
     } else {
-      // Mobile — scroll en window
       const rect = next.getBoundingClientRect()
       const absoluteTop = window.scrollY + rect.top
       window.scrollTo({ top: absoluteTop, behavior: 'smooth' })
@@ -51,17 +66,17 @@ export default function HeroSection({ onOpenProject }) {
       display="flex"
       flexDirection="column"
     >
-      {/* Mapa — capa base */}
+      {/* Mapa */}
       <Box
         position="absolute"
         inset="0"
         zIndex={0}
-        opacity={mapVisible ? 1 : 0}
-        transition="opacity 1.2s ease"
+        opacity={mapVisible ? mapOpacity : 0}
+        transition="opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
       >
-        {selectedCountry ? (
+        {displayedCountry ? (
           <CountryMap
-            countryCode={selectedCountry}
+            countryCode={displayedCountry}
             onSelectProject={handleSelectProject}
             onBack={handleBack}
           />
@@ -70,7 +85,7 @@ export default function HeroSection({ onOpenProject }) {
         )}
       </Box>
 
-      {/* Overlay — sin bloquear toques */}
+      {/* Overlay */}
       <Box
         position="absolute"
         inset="0"
@@ -79,7 +94,7 @@ export default function HeroSection({ onOpenProject }) {
         background="radial-gradient(ellipse at center, rgba(30,30,28,0.1) 0%, rgba(10,10,10,0.5) 100%)"
       />
 
-      {/* Zona inferior — logo + botón + texto separados */}
+      {/* Zona inferior */}
       {!selectedCountry && (
         <Box
           position="absolute"
@@ -91,32 +106,39 @@ export default function HeroSection({ onOpenProject }) {
           flexDirection="column"
           alignItems="center"
           pb={{ base: '24px', md: '40px' }}
-          gap={0}
-          // Fondo degradado para legibilidad
           background="linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 100%)"
           pt="60px"
           pointerEvents="none"
         >
-          {/* Texto arriba */}
-          <Text
-            fontFamily="body"
-            fontSize={{ base: '8px', md: '9px' }}
-            letterSpacing="0.3em"
-            textTransform="uppercase"
-            color="whiteAlpha.400"
-            mb={4}
-            ref={textRef}
-            className="fade-up"
+          {/* Texto */}
+          <Box
+            pointerEvents="auto"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap={2}
+            opacity={0.5}
+            _hover={{ opacity: 1 }}
+            transition="opacity 0.3s ease"
+            padding="12px"
           >
-            Proyectos alrededor del mundo
-          </Text>
+            <Text
+              fontFamily="body"
+              fontSize={{ base: '8px', md: '9px' }}
+              letterSpacing="0.35em"
+              textTransform="uppercase"
+              color="white"
+            >
+              Arquitectura, Interiorismo y Construcción alrededor del mundo.
+            </Text>
+          </Box>
 
           {/* Logo */}
           <Box
             as="img"
             src="/images/renders/SPAZIO.svg"
             alt="Spazio"
-            height={{ base: '28px', md: '36px' }}
+            height={{ base: '42px', md: '54px' }}
             width="auto"
             style={{ filter: 'brightness(0) invert(1)' }}
             opacity={0.8}

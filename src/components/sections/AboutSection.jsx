@@ -49,7 +49,7 @@ export default function AboutSection() {
       className="scroll-section"
       ref={sectionRef}
       minHeight="100vh"
-      bg="#0F0F0D"
+      bg="#0A0A0A"
       py={{ base: 20, md: 28 }}
       px={{ base: 6, md: 12, lg: 20 }}
     >

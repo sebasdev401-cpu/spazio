@@ -51,7 +51,7 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
     const pathGenerator = d3.geoPath().projection(projection)
     const targetNumeric = COUNTRY_NUMERIC[countryCode]
 
-    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then((world) => {
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then((world) => {
       const countries = topojson.feature(world, world.objects.countries)
 
       svg.selectAll('path')

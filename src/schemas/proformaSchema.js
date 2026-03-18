@@ -1,16 +1,28 @@
 import { z } from 'zod'
 
-export const proformaSchema = z.object({
+export const step1Schema = z.object({
   nombre: z.string().min(2, 'Ingresa tu nombre completo'),
-  empresa: z.string().optional(),
   email: z.string().email('Ingresa un email válido'),
-  telefono: z.string().min(7, 'Ingresa un teléfono válido'),
-  tipoProyecto: z.enum(['residencial', 'comercial', 'cultural', 'otro'], {
-    required_error: 'Selecciona un tipo de proyecto',
-  }),
-  metraje: z.string().min(1, 'Ingresa el metraje aproximado'),
-  presupuesto: z.enum(['bajo', 'medio', 'alto', 'por_definir'], {
-    required_error: 'Selecciona un rango de presupuesto',
-  }),
-  mensaje: z.string().min(10, 'Cuéntanos un poco más sobre tu proyecto'),
+  whatsapp: z.string().min(7, 'Ingresa tu número de WhatsApp'),
+  pais: z.string().min(1, 'Selecciona tu país'),
+  ciudad: z.string().min(2, 'Ingresa tu ciudad'),
+})
+
+export const step2Schema = z.object({
+  tipoPropiedad: z.string().min(1, 'Selecciona un tipo de propiedad'),
+  tipoPropiedadOtro: z.string().optional(),
+  estadoPropiedad: z.string().min(1, 'Selecciona el estado de tu propiedad'),
+  estadoPropiedadOtro: z.string().optional(),
+})
+
+export const step3Schema = z.object({
+  objetivo: z.string().min(1, 'Selecciona tu objetivo'),
+  objetivoOtro: z.string().optional(),
+  descripcion: z.string().min(10, 'Cuéntanos un poco más'),
+})
+
+export const step4Schema = z.object({
+  normativa: z.string().min(1, 'Selecciona una opción'),
+  normativaOtro: z.string().optional(),
+  acompanamiento: z.string().min(1, 'Selecciona una opción'),
 })
