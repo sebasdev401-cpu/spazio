@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import HeroSection from '../components/sections/HeroSection'
@@ -18,6 +18,24 @@ export default function Landing() {
     const project = allProjects.find((p) => p.id === projectId)
     if (project) setSelectedProject(project)
   }
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (!hash) return
+
+    const timeout = setTimeout(() => {
+      const target = document.querySelector(hash)
+      if (!target) return
+      const container = document.querySelector('.scroll-container')
+      if (container && container.scrollHeight > container.clientHeight) {
+        container.scrollTo({ top: target.offsetTop, behavior: 'smooth' })
+      } else {
+        target.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 800) // espera a que la página cargue
+
+    return () => clearTimeout(timeout)
+  }, [])
 
   return (
     <div className="scroll-container">

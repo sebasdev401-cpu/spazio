@@ -13,7 +13,10 @@ const COUNTRY_CENTERS = {
   SAU: [45.0, 24.0], MAR: [-7.0, 31.8], USA: [-98.0, 38.0],
 }
 
-
+const COUNTRY_ZOOM_CENTER = {
+  ECU: [-78.5, -1.8], CHE: [8.2, 46.8], ITA: [12.5, 42.5],
+  SAU: [45.0, 24.0], MAR: [-7.0, 31.8], USA: [-98.0, 38.0],
+}
 
 export default function WorldMap({ onSelectCountry }) {
   const svgRef = useRef(null)
@@ -25,8 +28,8 @@ export default function WorldMap({ onSelectCountry }) {
 
     const container = containerRef.current
     const isMobile = window.innerWidth < 768
-    const width = isMobile ? 700 : container.clientWidth
-    const height = container.clientHeight
+    const width = isMobile ? 900 : container.clientWidth
+    const height = isMobile ?  window.innerHeight * 0.55 : container.clientHeight
 
     if (width === 0 || height === 0) return
 
@@ -43,7 +46,6 @@ export default function WorldMap({ onSelectCountry }) {
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then((world) => {
       const countries = topojson.feature(world, world.objects.countries)
 
-      // Filtramos Antártida y polo sur
       const filteredFeatures = {
         type: 'FeatureCollection',
         features: countries.features.filter((f) => {
@@ -52,11 +54,6 @@ export default function WorldMap({ onSelectCountry }) {
         }),
       }
 
-      const isMobile = window.innerWidth < 768
-      const width = isMobile ? 900 : container.clientWidth
-      const height = isMobile ? 600 : container.clientHeight
-
-      // Bounding box zona habitada
       const boundsGeoJSON = {
         type: 'Feature',
         geometry: {
@@ -74,21 +71,26 @@ export default function WorldMap({ onSelectCountry }) {
       const projection = d3.geoNaturalEarth1()
         .fitSize([width, height], boundsGeoJSON)
 
+      // Elimina espacio muerto — ajusta translate para que el mapa empiece desde arriba
+      const topLeftY = projection([-180, 75])[1]
+      const bottomRightY = projection([180, -56])[1]
+      const mapHeight = bottomRightY - topLeftY
+      const currentTranslate = projection.translate()
+      const heightScale = height / mapHeight
+      const newScale = projection.scale() * heightScale
+      const newTranslateY = currentTranslate[1] * heightScale - topLeftY * heightScale
+
+      projection
+        .scale(newScale)
+        .translate([currentTranslate[0], newTranslateY])
+
       pathGenerator.projection(projection)
 
       const numericToCode = Object.fromEntries(
         Object.entries(COUNTRY_NUMERIC).map(([k, v]) => [v, k])
       )
 
-      const COUNTRY_ZOOM_CENTER = {
-        ECU: [-78.5, -1.8],
-        CHE: [8.2, 46.8],
-        ITA: [12.5, 42.5],
-        SAU: [45.0, 24.0],
-        MAR: [-7.0, 31.8],
-        USA: [-98.0, 38.0],
-      }
-
+      // Función zoom
       const zoomToCountry = (code) => {
         const coords = COUNTRY_ZOOM_CENTER[code]
         if (!coords) return
@@ -109,7 +111,7 @@ export default function WorldMap({ onSelectCountry }) {
 
         const zoomedPath = d3.geoPath().projection(zoomedProjection)
 
-        // Ocultar círculos durante el zoom
+        // Ocultar círculos durante zoom
         svg.selectAll('circle')
           .transition()
           .duration(300)
@@ -124,6 +126,8 @@ export default function WorldMap({ onSelectCountry }) {
 
         setTimeout(() => onSelectCountry(code), 850)
       }
+
+      // Dibujar países
       svg.selectAll('path')
         .data(countries.features)
         .enter()
@@ -185,7 +189,7 @@ export default function WorldMap({ onSelectCountry }) {
           if (event.cancelable) event.preventDefault()
           setTooltip({ visible: false, x: 0, y: 0, name: '', count: 0 })
           d3.select(this).attr('fill', '#2a2a28')
-          onSelectCountry(code)
+          zoomToCountry(code)
         })
 
       // Puntos sobre países activos
@@ -234,13 +238,21 @@ export default function WorldMap({ onSelectCountry }) {
       height="100%"
       bg="#0A0A0A"
       overflowX={{ base: 'auto', md: 'hidden' }}
+      overflowY="hidden"
     >
       <Box
         position="relative"
-        width={{ base: '700px', md: '100%' }}
-        height="100%"
+        width={{ base: '900px', md: '100%' }}
+        height={{ base: '60vh', md: '100%' }}
       >
-        <svg ref={svgRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+        <svg
+          ref={svgRef}
+          style={{
+            display: 'block',
+            width: '100%',
+            height: '100%',
+          }}
+        />
       </Box>
 
       {/* Tooltip desktop */}
