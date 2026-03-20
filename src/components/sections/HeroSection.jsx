@@ -9,7 +9,8 @@ export default function HeroSection({ onOpenProject }) {
   const [mapVisible, setMapVisible] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState(null)
   const [displayedCountry, setDisplayedCountry] = useState(null)
-  const [mapOpacity, setMapOpacity] = useState(1)
+  const [worldOpacity, setWorldOpacity] = useState(1)
+  const [countryOpacity, setCountryOpacity] = useState(0)
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -20,20 +21,22 @@ export default function HeroSection({ onOpenProject }) {
   }, [])
 
   const handleSelectCountry = (code) => {
-    setMapOpacity(0)
-    setTimeout(() => {
-      setSelectedCountry(code)
-      setDisplayedCountry(code)
-      setTimeout(() => setMapOpacity(1), 50)
-    }, 600)
+    setSelectedCountry(code)
+    setDisplayedCountry(code)
+    // Fade out WorldMap y fade in CountryMap simultáneamente
+    setWorldOpacity(0)
+    setCountryOpacity(1)
   }
 
+  const [worldKey, setWorldKey] = useState(0)
+
   const handleBack = () => {
-    setMapOpacity(0)
+    setWorldOpacity(1)
+    setCountryOpacity(0)
+    setWorldKey((prev) => prev + 1) // ← fuerza redibujado
     setTimeout(() => {
       setSelectedCountry(null)
       setDisplayedCountry(null)
-      setTimeout(() => setMapOpacity(1), 50)
     }, 600)
   }
 
@@ -56,7 +59,7 @@ export default function HeroSection({ onOpenProject }) {
 
   return (
     <Box
-      id="inicio"
+      id="mapa"
       className="scroll-section"
       position="relative"
       width="100%"
@@ -66,33 +69,82 @@ export default function HeroSection({ onOpenProject }) {
       display="flex"
       flexDirection="column"
     >
-      {/* Mapa */}
+      {/* WorldMap — capa fija */}
       <Box
         position="absolute"
-        inset="0"
+        top="64px"
+        left="0"
+        right="0"
+        bottom="0"
         zIndex={0}
-        opacity={mapVisible ? mapOpacity : 0}
-        transition="opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
+        opacity={mapVisible ? worldOpacity : 0}
+        transition="opacity 0.6s ease"
+        pointerEvents={selectedCountry ? 'none' : 'auto'}
       >
-        {displayedCountry ? (
+        <WorldMap key={worldKey} onSelectCountry={handleSelectCountry} />
+      </Box>
+
+      {/* CountryMap — capa encima */}
+      {displayedCountry && (
+        <Box
+          position="absolute"
+          top="64px"
+          left="0"
+          right="0"
+          bottom="0"
+          zIndex={1}
+          opacity={countryOpacity}
+          transition="opacity 0.6s ease"
+          pointerEvents={selectedCountry ? 'auto' : 'none'}
+        >
           <CountryMap
             countryCode={displayedCountry}
             onSelectProject={handleSelectProject}
             onBack={handleBack}
           />
-        ) : (
-          <WorldMap onSelectCountry={handleSelectCountry} />
-        )}
-      </Box>
+        </Box>
+      )}
 
       {/* Overlay */}
       <Box
         position="absolute"
         inset="0"
-        zIndex={1}
+        zIndex={2}
         pointerEvents="none"
         background="radial-gradient(ellipse at center, rgba(30,30,28,0.1) 0%, rgba(10,10,10,0.5) 100%)"
       />
+
+      {/* Título sección */}
+      {!selectedCountry && (
+        <Box
+          position="absolute"
+          top={{ base: '24px', md: '40px' }}
+          left={{ base: 6, md: 16, lg: 24 }}
+          zIndex={3}
+          pointerEvents="none"
+        >
+          <Text
+            fontFamily="body"
+            fontSize="9px"
+            letterSpacing="0.35em"
+            textTransform="uppercase"
+            color="whiteAlpha.400"
+            mb={2}
+          >
+            — Presencia global
+          </Text>
+          <Text
+            fontFamily="heading"
+            fontSize={{ base: '2xl', md: '4xl' }}
+            fontWeight="300"
+            fontStyle="italic"
+            color="white"
+            lineHeight="1.1"
+          >
+            Nuestros Proyectos<br />en el Mundo
+          </Text>
+        </Box>
+      )}
 
       {/* Zona inferior */}
       {!selectedCountry && (
@@ -110,7 +162,6 @@ export default function HeroSection({ onOpenProject }) {
           pt="60px"
           pointerEvents="none"
         >
-          {/* Texto */}
           <Box
             pointerEvents="auto"
             display="flex"
@@ -133,10 +184,9 @@ export default function HeroSection({ onOpenProject }) {
             </Text>
           </Box>
 
-          {/* Logo */}
           <Box
             as="img"
-            src="/images/renders/SPAZIO.svg"
+            src="/images/renders/SPAZIO_logo.svg"
             alt="Spazio"
             height={{ base: '42px', md: '54px' }}
             width="auto"
@@ -148,7 +198,6 @@ export default function HeroSection({ onOpenProject }) {
             onClick={handleScrollDown}
           />
 
-          {/* Ver proyectos */}
           <Box
             pointerEvents="auto"
             onClick={handleScrollDown}

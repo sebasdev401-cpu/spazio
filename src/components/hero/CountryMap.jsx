@@ -29,27 +29,30 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
     const container = containerRef.current
     const width = container.clientWidth
     const height = container.clientHeight
+    const isMobile = window.innerWidth < 768
 
     if (width === 0 || height === 0) return
 
-    const isMobile = width < 768
-    const mobileScale = isMobile ? config.scale * 0.55 : config.scale
-
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
+
+    // Arranca invisible
     svg
       .attr('width', width)
       .attr('height', height)
       .style('display', 'block')
       .style('background', '#0A0A0A')
+      .style('opacity', 0)
 
-    const projection = d3.geoMercator()
-      .scale(mobileScale)
+    const pathGenerator = d3.geoPath()
+    const targetNumeric = COUNTRY_NUMERIC[countryCode]
+
+    const finalProjection = d3.geoMercator()
+      .scale(isMobile ? config.scale * 0.55 : config.scale)
       .center(config.center)
       .translate([width / 2, height / 2])
 
-    const pathGenerator = d3.geoPath().projection(projection)
-    const targetNumeric = COUNTRY_NUMERIC[countryCode]
+    pathGenerator.projection(finalProjection)
 
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then((world) => {
       const countries = topojson.feature(world, world.objects.countries)
@@ -61,91 +64,94 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
         .attr('d', pathGenerator)
         .attr('fill', (d) => +d.id === targetNumeric ? '#1a1a18' : '#0A0A0A')
         .attr('stroke', '#F7F7F5')
-        .attr('stroke-width', (d) => +d.id === targetNumeric ? 0.5 : 0.15)
+        .attr('stroke-width', (d) => +d.id === targetNumeric ? 0.5 : 0.2)
         .attr('opacity', (d) => +d.id === targetNumeric ? 1 : 0.25)
 
-      // Marcadores
-      country.projects.forEach((project) => {
-        const projected = projection(project.coordinates)
-        if (!projected) return
+      // Fade in suave — imperceptible con el zoom del WorldMap
+      svg
+        .transition()
+        .duration(500)
+        .ease(d3.easeCubicInOut)
+        .style('opacity', 1)
+        .on('end', () => drawMarkers(svg, finalProjection, isMobile))
 
-        const g = svg.append('g')
-          .style('cursor', 'pointer')
+      function drawMarkers(svg, projection, isMobile) {
+        country.projects.forEach((project) => {
+          const projected = projection(project.coordinates)
+          if (!projected) return
 
-        // Pulso
-        g.append('circle')
-          .attr('cx', projected[0])
-          .attr('cy', projected[1])
-          .attr('r', isMobile ? 16 : 12)
-          .attr('fill', 'none')
-          .attr('stroke', '#F7F7F5')
-          .attr('stroke-width', 0.5)
-          .attr('opacity', 0.3)
+          const g = svg.append('g')
+            .style('cursor', 'pointer')
+            .attr('opacity', 0)
 
-        // Punto
-        g.append('circle')
-          .attr('cx', projected[0])
-          .attr('cy', projected[1])
-          .attr('r', isMobile ? 8 : 5)
-          .attr('fill', '#F7F7F5')
-          .attr('opacity', 0.9)
-          .on('mouseenter', function () {
-            d3.select(this).attr('r', isMobile ? 10 : 7)
-          })
-          .on('mouseleave', function () {
-            d3.select(this).attr('r', isMobile ? 8 : 5)
-          })
-          .on('click', () => onSelectProject(project.id))
-          .on('touchend', (event) => {
-            event.preventDefault()
-            onSelectProject(project.id)
-          })
+          g.transition().duration(600).delay(400).attr('opacity', 1)
 
-        // Ciudad
-        g.append('text')
-          .attr('x', projected[0])
-          .attr('y', projected[1] - (isMobile ? 24 : 18))
-          .attr('text-anchor', 'middle')
-          .attr('fill', '#F7F7F5')
-          .attr('font-size', isMobile ? '12px' : '10px')
-          .attr('font-family', 'Montserrat, sans-serif')
-          .attr('letter-spacing', '0.15em')
-          .attr('opacity', 0.8)
-          .style('pointer-events', 'none')
-          .text(project.city)
-
-        // Proyecto
-        g.append('text')
-          .attr('x', projected[0])
-          .attr('y', projected[1] - (isMobile ? 10 : 6))
-          .attr('text-anchor', 'middle')
-          .attr('fill', '#F7F7F5')
-          .attr('font-size', isMobile ? '10px' : '9px')
-          .attr('font-family', 'Montserrat, sans-serif')
-          .attr('letter-spacing', '0.1em')
-          .attr('opacity', 0.5)
-          .style('pointer-events', 'none')
-          .text(project.title)
-
-        // Área táctil invisible más grande en mobile
-        if (isMobile) {
           g.append('circle')
             .attr('cx', projected[0])
             .attr('cy', projected[1])
-            .attr('r', 30)
-            .attr('fill', 'transparent')
+            .attr('r', isMobile ? 16 : 12)
+            .attr('fill', 'none')
+            .attr('stroke', '#F7F7F5')
+            .attr('stroke-width', 0.5)
+            .attr('opacity', 0.3)
+
+          g.append('circle')
+            .attr('cx', projected[0])
+            .attr('cy', projected[1])
+            .attr('r', isMobile ? 8 : 5)
+            .attr('fill', '#F7F7F5')
+            .attr('opacity', 0.9)
+            .on('mouseenter', function () { d3.select(this).attr('r', isMobile ? 10 : 7) })
+            .on('mouseleave', function () { d3.select(this).attr('r', isMobile ? 8 : 5) })
+            .on('click', () => onSelectProject(project.id))
             .on('touchend', (event) => {
-              event.preventDefault()
+              if (event.cancelable) event.preventDefault()
               onSelectProject(project.id)
             })
-            .on('click', () => onSelectProject(project.id))
-        }
-      })
+
+          g.append('text')
+            .attr('x', projected[0])
+            .attr('y', projected[1] - (isMobile ? 24 : 18))
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#F7F7F5')
+            .attr('font-size', isMobile ? '12px' : '10px')
+            .attr('font-family', 'Montserrat, sans-serif')
+            .attr('letter-spacing', '0.15em')
+            .attr('opacity', 0.8)
+            .style('pointer-events', 'none')
+            .text(project.city)
+
+          g.append('text')
+            .attr('x', projected[0])
+            .attr('y', projected[1] - (isMobile ? 10 : 6))
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#F7F7F5')
+            .attr('font-size', isMobile ? '10px' : '9px')
+            .attr('font-family', 'Montserrat, sans-serif')
+            .attr('letter-spacing', '0.1em')
+            .attr('opacity', 0.5)
+            .style('pointer-events', 'none')
+            .text(project.title)
+
+          if (isMobile) {
+            g.append('circle')
+              .attr('cx', projected[0])
+              .attr('cy', projected[1])
+              .attr('r', 30)
+              .attr('fill', 'transparent')
+              .on('touchend', (event) => {
+                if (event.cancelable) event.preventDefault()
+                onSelectProject(project.id)
+              })
+              .on('click', () => onSelectProject(project.id))
+          }
+        })
+      }
     })
   }, [countryCode, country, config, onSelectProject])
 
   useEffect(() => {
-    const timeout = setTimeout(drawMap, 100)
+    const timeout = setTimeout(drawMap, 50)
     const handleResize = () => drawMap()
     window.addEventListener('resize', handleResize)
     return () => {
@@ -163,15 +169,18 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
       {/* Nombre del país */}
       <Box
         position="absolute"
-        top={{ base: '16px', md: '24px' }}
+        top={{ base: '80px', md: '90px' }}
         left="50%"
         transform="translateX(-50%)"
         zIndex={10}
+        opacity={0}
+        style={{ animation: 'fadeSlideUp 0.8s ease 1s forwards' }}
       >
         <Text
           fontFamily="heading"
           fontSize={{ base: 'lg', md: '2xl' }}
           fontWeight="300"
+          fontStyle="italic"
           color="white"
           textAlign="center"
           whiteSpace="nowrap"
@@ -180,7 +189,7 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
         </Text>
       </Box>
 
-      {/* Lista proyectos — derecha */}
+      {/* Lista proyectos */}
       <Box
         position="absolute"
         bottom={{ base: '80px', md: '100px' }}
@@ -190,6 +199,8 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
         flexDirection="column"
         gap={2}
         alignItems="flex-end"
+        opacity={0}
+        style={{ animation: 'fadeSlideUp 0.8s ease 1.2s forwards' }}
       >
         {country.projects.map((project) => (
           <Box
@@ -206,14 +217,14 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
             <Text fontFamily="body" fontSize="9px" letterSpacing="0.2em" textTransform="uppercase" color="whiteAlpha.500" mb={1}>
               {project.city}
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: 'sm', md: 'md' }} fontWeight="300" color="white">
+            <Text fontFamily="heading" fontSize={{ base: 'sm', md: 'md' }} fontWeight="300" fontStyle="italic" color="white">
               {project.title}
             </Text>
           </Box>
         ))}
       </Box>
 
-      {/* Botón volver — izquierda abajo */}
+      {/* Botón volver */}
       <Box
         position="absolute"
         bottom={{ base: '24px', md: '24px' }}
@@ -224,7 +235,8 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
         display="flex"
         alignItems="center"
         gap={3}
-        opacity={0.6}
+        opacity={0}
+        style={{ animation: 'fadeSlideUp 0.8s ease 1.2s forwards' }}
         _hover={{ opacity: 1 }}
         transition="opacity 0.3s ease"
       >
@@ -233,6 +245,13 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
           ← Mundo
         </Text>
       </Box>
+
+      <style>{`
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(12px) translateX(-50%); }
+          to { opacity: 0.6; transform: translateY(0) translateX(-50%); }
+        }
+      `}</style>
     </Box>
   )
 }

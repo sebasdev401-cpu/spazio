@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react'
 
 export function useNavbarVisibility() {
-  const isTouchDevice = window.matchMedia('(hover: none)').matches
-  const [visible, setVisible] = useState(isTouchDevice ? false : false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('inicio')
 
   useEffect(() => {
-    if (isTouchDevice) return
+    const sections = document.querySelectorAll('.scroll-section')
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id)
+          }
+        })
+      },
+      { threshold: 0.5 }
+    )
 
-    const handleMouseMove = (e) => {
-      setVisible(e.clientY < 90)
-    }
+    sections.forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
+  }, [])
 
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [isTouchDevice])
-
-  const toggleMenu = () => {
-    setMenuOpen((prev) => !prev)
-    setVisible((prev) => !prev)
-  }
-
-  return { visible, menuOpen, toggleMenu, isTouchDevice }
+  return { activeSection }
 }

@@ -1,8 +1,10 @@
-import { Box, Flex, Text, VStack } from '@chakra-ui/react'
+import { Box, Flex, VStack } from '@chakra-ui/react'
+import { useState } from 'react'
 import { useNavbarVisibility } from '../../hooks/useNavbarVisibility'
 
 const links = [
   { label: 'Inicio', href: '#inicio' },
+  { label: 'Proyectos en el Mundo', href: '#mapa' },
   { label: 'Arquitectónicos', href: '#arquitectonicos' },
   { label: 'Interiores', href: '#interiores' },
   { label: 'Inmobiliarios', href: '#inmobiliarios' },
@@ -12,20 +14,22 @@ const links = [
 ]
 
 export default function Navbar() {
-  const { visible, menuOpen, toggleMenu, isTouchDevice } = useNavbarVisibility()
+  const { activeSection } = useNavbarVisibility()
+  const isTouchDevice = window.matchMedia('(hover: none)').matches
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const toggleMenu = () => setMenuOpen((prev) => !prev)
 
   const handleClick = (e, href) => {
     e.preventDefault()
     const target = document.querySelector(href)
     if (target) {
-      // En mobile el scroll-container es el body, en desktop es el div
       if (isTouchDevice) {
         target.scrollIntoView({ behavior: 'smooth' })
       } else {
         const container = document.querySelector('.scroll-container')
         if (container) {
-          const offsetTop = target.offsetTop
-          container.scrollTo({ top: offsetTop, behavior: 'smooth' })
+          container.scrollTo({ top: target.offsetTop, behavior: 'smooth' })
         }
       }
     }
@@ -74,7 +78,7 @@ export default function Navbar() {
         </Box>
       )}
 
-      {/* Navbar desktop */}
+      {/* Navbar desktop — siempre visible */}
       {!isTouchDevice && (
         <Box
           position="fixed"
@@ -83,45 +87,67 @@ export default function Navbar() {
           right="0"
           zIndex={1000}
           px={12}
-          py={6}
-          opacity={visible ? 1 : 0}
-          transform={visible ? 'translateY(0)' : 'translateY(-100%)'}
-          transition="all 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
-          pointerEvents={visible ? 'all' : 'none'}
-          background="linear-gradient(to bottom, rgba(10,10,10,0.85) 0%, transparent 100%)"
+          py={5}
+          background="linear-gradient(to bottom, rgba(10,10,10,0.9) 0%, transparent 100%)"
+          backdropFilter="blur(4px)"
         >
           <Flex justify="space-between" align="center">
-            <Text
-              fontFamily="heading"
-              fontSize="xl"
-              fontWeight="300"
-              letterSpacing="0.35em"
-              color="white"
-              textTransform="uppercase"
-            >
-              Spazio
-            </Text>
-            <Flex gap={10}>
-              {links.map((link) => (
-                <Text
-                  key={link.label}
-                  as="a"
-                  href={link.href}
-                  onClick={(e) => handleClick(e, link.href)}
-                  fontFamily="body"
-                  fontSize="xs"
-                  fontWeight="400"
-                  letterSpacing="0.2em"
-                  textTransform="uppercase"
-                  color="white"
-                  opacity={0.75}
-                  cursor="none"
-                  _hover={{ opacity: 1 }}
-                  transition="opacity 0.3s ease"
-                >
-                  {link.label}
-                </Text>
-              ))}
+            {/* Logo */}
+            <Box
+              as="img"
+              src="/images/renders/SPAZIO_texto.svg"
+              alt="Spazio"
+              height="24px"
+              width="auto"
+              style={{ filter: 'brightness(0) invert(1)' }}
+              cursor="pointer"
+              onClick={(e) => handleClick(e, '#inicio')}
+              opacity={0.9}
+            />
+
+            {/* Links */}
+            <Flex gap={8} align="center">
+              {links.map((link) => {
+                const sectionId = link.href.replace('#', '')
+                const isActive = activeSection === sectionId
+
+                return (
+                  <Box
+                    key={link.label}
+                    as="a"
+                    href={link.href}
+                    onClick={(e) => handleClick(e, link.href)}
+                    position="relative"
+                    fontFamily="body"
+                    fontSize="10px"
+                    fontWeight="400"
+                    letterSpacing="0.2em"
+                    textTransform="uppercase"
+                    color="white"
+                    opacity={isActive ? 1 : 0.45}
+                    cursor="none"
+                    textDecoration="none"
+                    _hover={{ opacity: 1 }}
+                    transition="opacity 0.3s ease"
+                    pb="4px"
+                  >
+                    {link.label}
+                    {/* Línea debajo de sección activa */}
+                    <Box
+                      position="absolute"
+                      bottom="0"
+                      left="0"
+                      right="0"
+                      height="1px"
+                      bg="white"
+                      opacity={isActive ? 1 : 0}
+                      transform={isActive ? 'scaleX(1)' : 'scaleX(0)'}
+                      transformOrigin="left"
+                      transition="all 0.4s ease"
+                    />
+                  </Box>
+                )
+              })}
             </Flex>
           </Flex>
         </Box>
@@ -142,41 +168,57 @@ export default function Navbar() {
           pointerEvents={menuOpen ? 'all' : 'none'}
           transition="opacity 0.4s ease"
         >
-          {/* Logo */}
-          <Text
-            fontFamily="heading"
-            fontSize="2xl"
-            fontWeight="300"
-            letterSpacing="0.4em"
-            color="white"
-            textTransform="uppercase"
+          <Box
+            as="img"
+            src="/images/renders/SPAZIO.svg"
+            alt="Spazio"
+            height="24px"
+            width="auto"
             mb={16}
             opacity={0.5}
-          >
-            Spazio
-          </Text>
+            style={{ filter: 'brightness(0) invert(1)' }}
+          />
 
           <VStack spacing={8} align="center">
-            {links.map((link, i) => (
-              <Text
-                key={link.label}
-                as="a"
-                href={link.href}
-                onClick={(e) => handleClick(e, link.href)}
-                fontFamily="heading"
-                fontSize="4xl"
-                fontWeight="300"
-                
-                color="white"
-                textDecoration="none"
-                opacity={menuOpen ? 1 : 0}
-                transform={menuOpen ? 'translateY(0)' : 'translateY(20px)'}
-                transition={`all 0.5s ease ${i * 0.08}s`}
-                _hover={{ opacity: 0.6 }}
-              >
-                {link.label}
-              </Text>
-            ))}
+            {links.map((link, i) => {
+              const sectionId = link.href.replace('#', '')
+              const isActive = activeSection === sectionId
+
+              return (
+                <Box
+                  key={link.label}
+                  as="a"
+                  href={link.href}
+                  onClick={(e) => handleClick(e, link.href)}
+                  position="relative"
+                  fontFamily="heading"
+                  fontSize="4xl"
+                  fontWeight="300"
+                  fontStyle="italic"
+                  color="white"
+                  textDecoration="none"
+                  opacity={menuOpen ? (isActive ? 1 : 0.5) : 0}
+                  transform={menuOpen ? 'translateY(0)' : 'translateY(20px)'}
+                  transition={`all 0.5s ease ${i * 0.08}s`}
+                  _hover={{ opacity: 1 }}
+                  pb="4px"
+                >
+                  {link.label}
+                  <Box
+                    position="absolute"
+                    bottom="0"
+                    left="0"
+                    right="0"
+                    height="1px"
+                    bg="white"
+                    opacity={isActive ? 1 : 0}
+                    transform={isActive ? 'scaleX(1)' : 'scaleX(0)'}
+                    transformOrigin="left"
+                    transition="all 0.4s ease"
+                  />
+                </Box>
+              )
+            })}
           </VStack>
         </Box>
       )}

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
+import PhotoRoulette from '../components/sections/PhotoRoulette'
 import HeroSection from '../components/sections/HeroSection'
 import ProjectsSection from '../components/sections/ProjectsSection'
 import AboutSection from '../components/sections/AboutSection'
@@ -14,15 +15,9 @@ export default function Landing() {
   const [selectedProject, setSelectedProject] = useState(null)
   useSectionTransition()
 
-  const handleOpenProject = (projectId) => {
-    const project = allProjects.find((p) => p.id === projectId)
-    if (project) setSelectedProject(project)
-  }
-
   useEffect(() => {
     const hash = window.location.hash
     if (!hash) return
-
     const timeout = setTimeout(() => {
       const target = document.querySelector(hash)
       if (!target) return
@@ -32,14 +27,19 @@ export default function Landing() {
       } else {
         target.scrollIntoView({ behavior: 'smooth' })
       }
-    }, 800) // espera a que la página cargue
-
+    }, 800)
     return () => clearTimeout(timeout)
   }, [])
+
+  const handleOpenProject = (projectId) => {
+    const project = allProjects.find((p) => p.id === projectId)
+    if (project) setSelectedProject(project)
+  }
 
   return (
     <div className="scroll-container">
       <Navbar />
+      <PhotoRoulette />
       <HeroSection onOpenProject={handleOpenProject} />
       <ProjectsSection />
       <AboutSection />

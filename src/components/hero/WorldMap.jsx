@@ -29,7 +29,8 @@ export default function WorldMap({ onSelectCountry }) {
     const container = containerRef.current
     const isMobile = window.innerWidth < 768
     const width = isMobile ? 900 : container.clientWidth
-    const height = isMobile ?  window.innerHeight * 0.55 : container.clientHeight
+    const NAVBAR_HEIGHT = 64
+    const height = isMobile ? window.innerHeight * 0.55 : container.clientHeight - NAVBAR_HEIGHT
 
     if (width === 0 || height === 0) return
 
@@ -45,14 +46,6 @@ export default function WorldMap({ onSelectCountry }) {
 
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then((world) => {
       const countries = topojson.feature(world, world.objects.countries)
-
-      const filteredFeatures = {
-        type: 'FeatureCollection',
-        features: countries.features.filter((f) => {
-          const bounds = d3.geoBounds(f)
-          return bounds[0][1] > -56
-        }),
-      }
 
       const boundsGeoJSON = {
         type: 'Feature',
@@ -71,18 +64,20 @@ export default function WorldMap({ onSelectCountry }) {
       const projection = d3.geoNaturalEarth1()
         .fitSize([width, height], boundsGeoJSON)
 
-      // Elimina espacio muerto — ajusta translate para que el mapa empiece desde arriba
-      const topLeftY = projection([-180, 75])[1]
-      const bottomRightY = projection([180, -56])[1]
-      const mapHeight = bottomRightY - topLeftY
-      const currentTranslate = projection.translate()
-      const heightScale = height / mapHeight
-      const newScale = projection.scale() * heightScale
-      const newTranslateY = currentTranslate[1] * heightScale - topLeftY * heightScale
+      // Solo en desktop ajustamos para llenar pantalla sin espacio muerto
+      if (!isMobile) {
+        const topLeftY = projection([-180, 75])[1]
+        const bottomRightY = projection([180, -56])[1]
+        const mapHeight = bottomRightY - topLeftY
+        const currentTranslate = projection.translate()
+        const heightScale = height / mapHeight
+        const newScale = projection.scale() * heightScale
+        const newTranslateY = currentTranslate[1] * heightScale - topLeftY * heightScale
 
-      projection
-        .scale(newScale)
-        .translate([currentTranslate[0], newTranslateY])
+        projection
+          .scale(newScale)
+          .translate([currentTranslate[0], newTranslateY])
+      }
 
       pathGenerator.projection(projection)
 
@@ -111,20 +106,18 @@ export default function WorldMap({ onSelectCountry }) {
 
         const zoomedPath = d3.geoPath().projection(zoomedProjection)
 
-        // Ocultar círculos durante zoom
         svg.selectAll('circle')
           .transition()
           .duration(300)
           .attr('opacity', 0)
 
-        // Zoom en paths
         svg.selectAll('path')
           .transition()
-          .duration(800)
+          .duration(1000)
           .ease(d3.easeCubicInOut)
           .attr('d', zoomedPath)
 
-        setTimeout(() => onSelectCountry(code), 850)
+        setTimeout(() => onSelectCountry(code), 1000)
       }
 
       // Dibujar países
@@ -192,6 +185,20 @@ export default function WorldMap({ onSelectCountry }) {
           zoomToCountry(code)
         })
 
+      // Cortar polo sur solo en mobile
+      if (isMobile) {
+        svg.append('clipPath')
+          .attr('id', 'map-clip')
+          .append('rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', width)
+          .attr('height', height * 0.82)
+
+        svg.selectAll('path')
+          .attr('clip-path', 'url(#map-clip)')
+      }
+
       // Puntos sobre países activos
       Object.entries(COUNTRY_CENTERS).forEach(([code, coords]) => {
         const projected = projection(coords)
@@ -243,7 +250,7 @@ export default function WorldMap({ onSelectCountry }) {
       <Box
         position="relative"
         width={{ base: '900px', md: '100%' }}
-        height={{ base: '60vh', md: '100%' }}
+        height={{ base: '55vh', md: '100%' }}
       >
         <svg
           ref={svgRef}
