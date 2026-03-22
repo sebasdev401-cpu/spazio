@@ -48,7 +48,7 @@ export default function ProformaSection() {
             textTransform="uppercase"
             color="whiteAlpha.500"
           >
-            — 04
+            — 06
           </Text>
 
           <Text
@@ -91,18 +91,19 @@ export default function ProformaSection() {
           {/* Imagen decorativa */}
           <Box
             width="100%"
-            height="280px"
+            maxWidth={{ base: '100%', md: '650px' }}
             overflow="hidden"
             position="relative"
             mt={4}
           >
             <Box
-              position="absolute"
-              inset="0"
-              backgroundImage="url('https://placehold.co/800x600/111110/888884?text=render_proforma_1')"
-              backgroundSize="cover"
-              backgroundPosition="center"
-              filter="brightness(0.6)"
+              as="img"
+              src="/images/renders/27_KITCHEN PLANS.pdf.jpg"
+              alt="Kitchen Plans"
+              width="100%"
+              height="auto"
+              display="block"
+              style={{ filter: 'brightness(0.6)' }}
             />
           </Box>
         </VStack>

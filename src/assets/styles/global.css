@@ -73,6 +73,7 @@ body {
   height: 100vh;
   overflow-y: scroll;
   scroll-behavior: smooth;
+  transform: none !important;
 }
 
 /* ===================== */
@@ -116,6 +117,15 @@ body {
   }
 }
 
+/* Garantiza que el navbar siempre sea visible */
+#navbar-mobile {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+}
+
 /* ===================== */
 /* EFECTO ENTRADA        */
 /* ===================== */
@@ -130,7 +140,7 @@ body {
   transform: translateY(0);
 }
 
-/* Estado inicial — fuera de vista */
+/* Estado inicial — solo desktop */
 .scroll-section {
   opacity: 0;
   transform: translateX(30px);
@@ -155,6 +165,37 @@ body {
     transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Mobile — sin transiciones para evitar conflictos con navbar */
+@media (hover: none) {
+  .scroll-section {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .scroll-section.section-visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .scroll-section.section-exit {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .fade-up {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .fade-up.visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* ===================== */
 /* SCROLLBAR             */
 /* ===================== */
@@ -169,3 +210,4 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #444;
 }
+

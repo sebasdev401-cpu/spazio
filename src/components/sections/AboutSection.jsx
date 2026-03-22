@@ -23,9 +23,8 @@ const team = [
 ]
 
 const stats = [
-  { value: '12+', label: 'Años de experiencia' },
-  { value: '80+', label: 'Proyectos completados' },
-  { value: '4', label: 'Premios nacionales' },
+  { value: '4+', label: 'Años de experiencia' },
+  { value: '10+', label: 'Proyectos completados' },
 ]
 
 export default function AboutSection() {
@@ -68,7 +67,7 @@ export default function AboutSection() {
           color="whiteAlpha.500"
           mb={3}
         >
-          — 03
+          — 05
         </Text>
         <Text
           fontFamily="heading"

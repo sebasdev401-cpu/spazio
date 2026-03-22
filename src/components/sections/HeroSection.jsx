@@ -137,7 +137,6 @@ export default function HeroSection({ onOpenProject }) {
             fontFamily="heading"
             fontSize={{ base: '2xl', md: '4xl' }}
             fontWeight="300"
-            fontStyle="italic"
             color="white"
             lineHeight="1.1"
           >

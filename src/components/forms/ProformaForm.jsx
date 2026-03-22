@@ -1,11 +1,31 @@
 import { Box, Text, VStack, HStack, Input, Textarea } from '@chakra-ui/react'
+import { useState, useRef, useEffect } from 'react'
 import { useProformaForm } from '../../hooks/useProformaForm'
 
 const paises = [
-  'Ecuador', 'Colombia', 'Perú', 'Estados Unidos',
-  'España', 'Italia', 'Suiza', 'Otro',
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia',
+  'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Belarus', 'Belgium', 'Belize',
+  'Benin', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria',
+  'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Chad', 'Chile',
+  'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus',
+  'Czech Republic', 'Denmark', 'Djibouti', 'Dominican Republic', 'Ecuador', 'Egypt',
+  'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland',
+  'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Guatemala',
+  'Guinea', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq',
+  'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kuwait',
+  'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein',
+  'Lithuania', 'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta',
+  'Mauritania', 'Mauritius', 'Mexico', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco',
+  'Mozambique', 'Myanmar', 'Namibia', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua',
+  'Niger', 'Nigeria', 'North Korea', 'Norway', 'Oman', 'Pakistan', 'Panama', 'Paraguay',
+  'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda',
+  'Saudi Arabia', 'Senegal', 'Serbia', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia',
+  'Somalia', 'South Africa', 'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan',
+  'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand',
+  'Togo', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Uganda', 'Ukraine',
+  'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
+  'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe', 'Otro',
 ]
-
 const tipoPropiedadOpciones = [
   { value: 'casa', label: 'Casa' },
   { value: 'terreno', label: 'Terreno' },
@@ -171,6 +191,128 @@ function RadioGroup({ label, sublabel, options, value, onChange, error, otroValu
   )
 }
 
+function CountrySearch({ value, onChange, error }) {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const containerRef = useRef(null)
+
+  const filtered = paises.filter((p) =>
+    p.toLowerCase().includes(query.toLowerCase())
+  ).slice(0, 8)
+
+  const handleSelect = (country) => {
+    onChange(country)
+    setQuery(country)
+    setOpen(false)
+  }
+
+  useEffect(() => {
+    if (value && !query) setQuery(value)
+  }, [value])
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <Box position="relative" pb={6} ref={containerRef}>
+      <Text {...labelStyle}>País de residencia</Text>
+      <Box position="relative">
+        <input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setOpen(true)
+            if (!e.target.value) onChange('')
+          }}
+          onFocus={() => { setFocused(true); setOpen(true) }}
+          placeholder="Buscar país..."
+          style={{
+            width: '100%',
+            background: 'transparent',
+            border: 'none',
+            borderBottom: `1px solid ${focused ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)'}`,
+            color: '#F7F7F5',
+            fontFamily: 'Montserrat, sans-serif',
+            fontSize: '14px',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            padding: '12px 0',
+            outline: 'none',
+            transition: 'border-color 0.3s ease',
+          }}
+        />
+        <Box
+          position="absolute"
+          right="0"
+          top="50%"
+          transform="translateY(-50%)"
+          pointerEvents="none"
+          color="whiteAlpha.400"
+          fontSize="10px"
+        >
+          ↓
+        </Box>
+      </Box>
+
+      {/* Dropdown */}
+      {open && filtered.length > 0 && (
+        <Box
+          position="absolute"
+          top="100%"
+          left="0"
+          right="0"
+          zIndex={100}
+          bg="#111110"
+          border="1px solid rgba(255,255,255,0.1)"
+          maxHeight="240px"
+          overflowY="auto"
+          sx={{
+            '&::-webkit-scrollbar': { width: '2px' },
+            '&::-webkit-scrollbar-thumb': { background: '#444' },
+          }}
+        >
+          {filtered.map((country) => (
+            <Box
+              key={country}
+              px={4}
+              py={3}
+              cursor="pointer"
+              bg={value === country ? 'rgba(247,247,245,0.08)' : 'transparent'}
+              _hover={{ bg: 'rgba(247,247,245,0.05)' }}
+              onClick={() => handleSelect(country)}
+              transition="background 0.2s ease"
+            >
+              <Text
+                fontFamily="body"
+                fontSize="xs"
+                fontWeight="300"
+                color={value === country ? 'white' : 'whiteAlpha.700'}
+                letterSpacing="0.05em"
+              >
+                {country}
+              </Text>
+            </Box>
+          ))}
+        </Box>
+      )}
+
+      {error && (
+        <Text position="absolute" bottom="0" fontFamily="body" fontSize="10px" color="red.300">
+          {error}
+        </Text>
+      )}
+    </Box>
+  )
+}
+
 export default function ProformaForm() {
   const { currentStep, formData, updateField, errors, onNext, onBack, onSubmit, status } = useProformaForm()
 
@@ -190,7 +332,6 @@ export default function ProformaForm() {
 
   return (
     <Box>
-
       {status === 'error' && (
         <Box
           mb={6}
@@ -240,35 +381,11 @@ export default function ProformaForm() {
           <Field label="WhatsApp (con código de país)" error={errors.whatsapp}>
             <Input {...inputStyle} placeholder="+593 99 000 0000" value={formData.whatsapp || ''} onChange={(e) => updateField('whatsapp', e.target.value)} />
           </Field>
-          <Field label="País de residencia" error={errors.pais}>
-            <Box position="relative">
-              <Box
-                as="select"
-                width="100%"
-                bg="#0A0A0A"
-                border="none"
-                borderBottom="1px solid rgba(255,255,255,0.2)"
-                borderRadius="0"
-                color="#F7F7F5"
-                fontFamily="Montserrat, sans-serif"
-                fontSize="14px"
-                fontWeight="300"
-                px="0"
-                py="12px"
-                outline="none"
-                appearance="none"
-                cursor="pointer"
-                value={formData.pais || 'Ecuador'}
-                onChange={(e) => updateField('pais', e.target.value)}
-                sx={{ '& option': { background: '#0A0A0A', color: '#F7F7F5' } }}
-              >
-                {paises.map((p) => (
-                  <option key={p} value={p} style={{ background: '#0A0A0A', color: '#F7F7F5' }}>{p}</option>
-                ))}
-              </Box>
-              <Box position="absolute" right="0" top="50%" transform="translateY(-50%)" pointerEvents="none" color="whiteAlpha.500" fontSize="10px">↓</Box>
-            </Box>
-          </Field>
+          <CountrySearch
+            value={formData.pais}
+            onChange={(val) => updateField('pais', val)}
+            error={errors.pais}
+          />
           <Field label="Ciudad" error={errors.ciudad}>
             <Input {...inputStyle} placeholder="Tu ciudad" value={formData.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} />
           </Field>
