@@ -48,19 +48,6 @@ export function useProformaForm() {
     setCurrentStep((prev) => prev - 1)
     setErrors({})
   }
-
-  const onSubmit = async () => {
-    setStatus('loading')
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log('Proforma completa:', formData)
-      setStatus('success')
-    } catch {
-      setStatus('error')
-    }
-  }
-
-  /*
   
   const onSubmit = async () => {
     setStatus('loading')
@@ -83,7 +70,6 @@ export function useProformaForm() {
     }
   }
   
-  */
 
   return {
     currentStep,
