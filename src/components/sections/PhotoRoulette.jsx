@@ -214,7 +214,6 @@ export default function PhotoRoulette() {
           fontFamily="heading"
           fontSize={{ base: '3xl', md: '5xl', lg: '6xl' }}
           fontWeight="300"
-          fontStyle="italic"
           color="white"
           lineHeight="1"
           key={current}

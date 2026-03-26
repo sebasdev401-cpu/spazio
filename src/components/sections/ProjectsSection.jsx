@@ -147,6 +147,7 @@ const categories = [
       },
     ],
   },
+  /*
   {
     id: 'inmobiliarios',
     number: '04',
@@ -155,6 +156,7 @@ const categories = [
       'Desarrollamos proyectos inmobiliarios con visión a largo plazo. Desde la conceptualización hasta la entrega, acompañamos cada etapa con rigor técnico y sensibilidad espacial.',
     projects: [],
   },
+  */
 ]
 
 export default function ProjectsSection() {

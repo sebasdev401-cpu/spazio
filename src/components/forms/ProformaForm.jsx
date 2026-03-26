@@ -123,7 +123,7 @@ function RadioGroup({ label, sublabel, options, value, onChange, error, otroValu
     <Box position="relative" pb={6}>
       <Text {...labelStyle}>{label}</Text>
       {sublabel && (
-        <Text fontFamily="body" fontSize="10px" color="whiteAlpha.400" letterSpacing="0.05em" mb={4} fontStyle="italic">
+        <Text fontFamily="body" fontSize="10px" color="whiteAlpha.400" letterSpacing="0.05em" mb={4}>
           {sublabel}
         </Text>
       )}

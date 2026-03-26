@@ -19,7 +19,6 @@ export default function Footer() {
           fontFamily="heading"
           fontSize="sm"
           fontWeight="300"
-          fontStyle="italic"
           letterSpacing="0.2em"
           color="whiteAlpha.400"
         >

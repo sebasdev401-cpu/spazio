@@ -8,7 +8,7 @@ const links = [
   { label: 'Proyectos en el Mundo', href: '#mapa' },
   { label: 'Arquitectónicos', href: '#arquitectonicos' },
   { label: 'Interiores', href: '#interiores' },
-  { label: 'Inmobiliarios', href: '#inmobiliarios' },
+  //{ label: 'Inmobiliarios', href: '#inmobiliarios' },
   { label: 'Quiénes Somos', href: '#quienes' },
   { label: 'Proforma', href: '#proforma' },
   { label: 'Contacto', href: '#contacto' },

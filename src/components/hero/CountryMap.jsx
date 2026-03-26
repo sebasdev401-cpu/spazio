@@ -180,7 +180,6 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
           fontFamily="heading"
           fontSize={{ base: 'lg', md: '2xl' }}
           fontWeight="300"
-          fontStyle="italic"
           color="white"
           textAlign="center"
           whiteSpace="nowrap"
@@ -217,7 +216,7 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
             <Text fontFamily="body" fontSize="9px" letterSpacing="0.2em" textTransform="uppercase" color="whiteAlpha.500" mb={1}>
               {project.city}
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: 'sm', md: 'md' }} fontWeight="300" fontStyle="italic" color="white">
+            <Text fontFamily="heading" fontSize={{ base: 'sm', md: 'md' }} fontWeight="300" color="white">
               {project.title}
             </Text>
           </Box>

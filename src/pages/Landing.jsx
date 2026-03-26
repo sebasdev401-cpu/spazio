@@ -16,10 +16,16 @@ export default function Landing() {
   useSectionTransition()
 
   useEffect(() => {
+    // Detecta hash (#proforma) O parámetro (?section=proforma)
     const hash = window.location.hash
-    if (!hash) return
-    const timeout = setTimeout(() => {
-      const target = document.querySelector(hash)
+    const params = new URLSearchParams(window.location.search)
+    const section = params.get('section')
+    const targetId = hash ? hash : section ? `#${section}` : null
+
+    if (!targetId) return
+
+    const scrollTo = () => {
+      const target = document.querySelector(targetId)
       if (!target) return
       const container = document.querySelector('.scroll-container')
       if (container && container.scrollHeight > container.clientHeight) {
@@ -27,8 +33,16 @@ export default function Landing() {
       } else {
         target.scrollIntoView({ behavior: 'smooth' })
       }
-    }, 800)
-    return () => clearTimeout(timeout)
+    }
+
+    // Dos intentos — el segundo cubre webviews lentos como Instagram
+    const timeout1 = setTimeout(scrollTo, 800)
+    const timeout2 = setTimeout(scrollTo, 1500)
+
+    return () => {
+      clearTimeout(timeout1)
+      clearTimeout(timeout2)
+    }
   }, [])
 
   const handleOpenProject = (projectId) => {

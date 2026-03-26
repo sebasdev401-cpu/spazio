@@ -80,7 +80,6 @@ export function RadioGroupField({ label, sublabel, error, options, register, nam
           color="whiteAlpha.400"
           letterSpacing="0.05em"
           mb={4}
-          fontStyle="italic"
         >
           {sublabel}
         </Text>

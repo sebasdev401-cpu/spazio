@@ -95,6 +95,7 @@ export default function ProformaSection() {
             overflow="hidden"
             position="relative"
             mt={4}
+            display={{ base: 'none', md: 'block' }}
           >
             <Box
               as="img"
