@@ -319,13 +319,64 @@ export default function ProformaForm() {
   if (status === 'success') {
     return (
       <VStack align="flex-start" spacing={6} py={12}>
-        <Text fontFamily="heading" fontSize={{ base: '3xl', md: '5xl' }} fontWeight="300" color="white" lineHeight="1.2">
+        <Text
+          fontFamily="heading"
+          fontSize={{ base: '3xl', md: '5xl' }}
+          fontWeight="300"
+          color="white"
+          lineHeight="1.2"
+        >
           Gracias por confiar en nuestro proceso.
         </Text>
+
         <Box width="40px" height="1px" bg="whiteAlpha.300" />
-        <Text fontFamily="body" fontSize="sm" fontWeight="300" color="whiteAlpha.600" letterSpacing="0.05em" lineHeight="2">
+
+        <Text
+          fontFamily="body"
+          fontSize="sm"
+          fontWeight="300"
+          color="whiteAlpha.600"
+          letterSpacing="0.05em"
+          lineHeight="2"
+        >
           Analizaremos tu caso y nos pondremos en contacto para una primera conversación.
         </Text>
+
+        <Text
+          fontFamily="body"
+          fontSize="sm"
+          fontWeight="300"
+          color="whiteAlpha.500"
+          letterSpacing="0.05em"
+          lineHeight="2"
+        >
+          Si necesitas más asistencia, agenda una cita aquí:
+        </Text>
+
+        <Box
+          as="a"
+          href="https://calendar.app.google/XcfA7BFsBnxKnBGPA"
+          target="_blank"
+          rel="noopener noreferrer"
+          display="flex"
+          alignItems="center"
+          gap={4}
+          opacity={0.6}
+          _hover={{ opacity: 1 }}
+          transition="opacity 0.3s ease"
+          cursor="pointer"
+        >
+          <Box width="30px" height="1px" bg="white" />
+          <Text
+            fontFamily="body"
+            fontSize="10px"
+            letterSpacing="0.25em"
+            textTransform="uppercase"
+            color="white"
+          >
+            Agendar una cita
+          </Text>
+        </Box>
       </VStack>
     )
   }
@@ -472,35 +523,35 @@ export default function ProformaForm() {
       {currentStep === 4 && (
         <VStack align="flex-start" spacing={8}>
           <VStack align="flex-start" spacing={4}>
-            <Text fontFamily="body" fontSize="sm" fontWeight="300" lineHeight="2" color="whiteAlpha.600">
+            <Text
+              fontFamily="body"
+              fontSize="sm"
+              fontWeight="300"
+              lineHeight="2"
+              color="whiteAlpha.600"
+            >
               Al enviar este formulario podremos analizar tu caso y contactarte para una primera conversación, donde te explicaremos cómo podríamos ayudarte desde Spazio.
             </Text>
             <Box width="40px" height="1px" bg="whiteAlpha.200" />
-            <Text fontFamily="heading" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="300" color="white" lineHeight="1.4">
+            <Text
+              fontFamily="heading"
+              fontSize={{ base: 'xl', md: '2xl' }}
+              fontWeight="300"
+              color="white"
+              lineHeight="1.4"
+            >
               Diseñamos con criterio, estrategia y sensibilidad.
             </Text>
-            <Text fontFamily="body" fontSize="sm" fontWeight="300" color="whiteAlpha.500" letterSpacing="0.05em">
+            <Text
+              fontFamily="body"
+              fontSize="sm"
+              fontWeight="300"
+              color="whiteAlpha.500"
+              letterSpacing="0.05em"
+            >
               Gracias por confiar en nuestro proceso.
             </Text>
           </VStack>
-          <Box
-            as="a"
-            href="https://calendar.app.google/XcfA7BFsBnxKnBGPA"
-            target="_blank"
-            rel="noopener noreferrer"
-            display="flex"
-            alignItems="center"
-            gap={4}
-            opacity={0.6}
-            _hover={{ opacity: 1 }}
-            transition="opacity 0.3s ease"
-            cursor="pointer"
-          >
-            <Box width="30px" height="1px" bg="white" />
-            <Text fontFamily="body" fontSize="10px" letterSpacing="0.25em" textTransform="uppercase" color="white">
-              Agendar una cita
-            </Text>
-          </Box>
         </VStack>
       )}
 
