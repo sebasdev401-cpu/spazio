@@ -350,7 +350,7 @@ export default function ProformaForm() {
           letterSpacing="0.05em"
           lineHeight="2"
         >
-          Si necesitas más asistencia, agenda una cita aquí:
+          Agenda tu cita gratuita para discutir sobre tu proyecto:
         </Text>
 
         <Box
@@ -358,24 +358,28 @@ export default function ProformaForm() {
           href="https://calendar.app.google/XcfA7BFsBnxKnBGPA"
           target="_blank"
           rel="noopener noreferrer"
-          display="flex"
+          display="inline-flex"
           alignItems="center"
-          gap={4}
-          opacity={0.6}
-          _hover={{ opacity: 1 }}
-          transition="opacity 0.3s ease"
+          justifyContent="center"
+          px={8}
+          py={4}
+          border="1px solid rgba(247,247,245,0.6)"
+          color="white"
+          bg="transparent"
+          fontFamily="body"
+          fontSize="10px"
+          letterSpacing="0.25em"
+          textTransform="uppercase"
+          textDecoration="none"
           cursor="pointer"
+          transition="all 0.4s ease"
+          _hover={{
+            bg: 'white',
+            color: '#0A0A0A',
+            borderColor: 'white',
+          }}
         >
-          <Box width="30px" height="1px" bg="white" />
-          <Text
-            fontFamily="body"
-            fontSize="10px"
-            letterSpacing="0.25em"
-            textTransform="uppercase"
-            color="white"
-          >
-            Agendar una cita
-          </Text>
+          Agendar una cita
         </Box>
       </VStack>
     )
