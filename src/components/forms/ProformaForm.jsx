@@ -388,10 +388,10 @@ export default function ProformaForm() {
             bottom="-10px" // 👈 sale del borde
             left="50%"
             transform="translateX(-50%)"
-            fontSize="8px"
+            fontSize="12px"
             letterSpacing="0.2em"
             textTransform="uppercase"
-            color="whiteAlpha.600"
+            color="white"
             bg="#0A0A0A" // 👈 para que "corte" el borde
             px={2}
           >
