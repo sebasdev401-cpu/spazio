@@ -117,7 +117,7 @@ export default function WorldMap({ onSelectCountry }) {
           .ease(d3.easeCubicInOut)
           .attr('d', zoomedPath)
 
-        setTimeout(() => onSelectCountry(code), 1000)
+        setTimeout(() => onSelectCountry(code), 600)
       }
 
       // Dibujar países
@@ -228,7 +228,7 @@ export default function WorldMap({ onSelectCountry }) {
   }, [onSelectCountry])
 
   useEffect(() => {
-    const timeout = setTimeout(drawMap, 100)
+    const timeout = setTimeout(drawMap, 5)
     const handleResize = () => drawMap()
     window.addEventListener('resize', handleResize)
     return () => {

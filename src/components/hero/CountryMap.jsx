@@ -151,7 +151,7 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
   }, [countryCode, country, config, onSelectProject])
 
   useEffect(() => {
-    const timeout = setTimeout(drawMap, 50)
+    const timeout = setTimeout(drawMap, 5)
     const handleResize = () => drawMap()
     window.addEventListener('resize', handleResize)
     return () => {
@@ -234,21 +234,29 @@ export default function CountryMap({ countryCode, onSelectProject, onBack }) {
         display="flex"
         alignItems="center"
         gap={3}
+        role="group"
         opacity={0}
         style={{ animation: 'fadeSlideUp 0.8s ease 1.2s forwards' }}
-        _hover={{ opacity: 1 }}
         transition="opacity 0.3s ease"
       >
         <Box width="30px" height="1px" bg="white" />
-        <Text fontFamily="body" fontSize="10px" letterSpacing="0.25em" textTransform="uppercase" color="white">
+        <Text 
+            fontFamily="body" 
+            fontSize="10px" 
+            letterSpacing="0.25em" 
+            textTransform="uppercase" 
+            color="whiteAlpha.600"   // 👈 color base más tenue
+            transition="color 0.3s ease"
+            _hover={{ color: 'white' }} 
+        >
           ← Mundo
         </Text>
       </Box>
 
       <style>{`
         @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(12px) translateX(-50%); }
-          to { opacity: 0.6; transform: translateY(0) translateX(-50%); }
+          from { opacity: 0; transform: translateY(12px)}
+          to { opacity: 1; transform: translateY(0)}
         }
       `}</style>
     </Box>
