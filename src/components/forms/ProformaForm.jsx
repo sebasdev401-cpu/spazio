@@ -358,6 +358,7 @@ export default function ProformaForm() {
           href="https://calendar.app.google/XcfA7BFsBnxKnBGPA"
           target="_blank"
           rel="noopener noreferrer"
+          position="relative" // 👈 necesario
           display="inline-flex"
           alignItems="center"
           justifyContent="center"
@@ -380,6 +381,22 @@ export default function ProformaForm() {
           }}
         >
           Agendar una cita
+
+          {/* Texto inferior */}
+          <Box
+            position="absolute"
+            bottom="-10px" // 👈 sale del borde
+            left="50%"
+            transform="translateX(-50%)"
+            fontSize="8px"
+            letterSpacing="0.2em"
+            textTransform="uppercase"
+            color="whiteAlpha.600"
+            bg="#0A0A0A" // 👈 para que "corte" el borde
+            px={2}
+          >
+            Gratuito
+          </Box>
         </Box>
       </VStack>
     )
