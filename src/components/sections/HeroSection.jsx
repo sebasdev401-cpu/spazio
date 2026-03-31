@@ -1,48 +1,19 @@
 import { Box, Text } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
 import WorldMap from '../hero/WorldMap'
-import CountryMap from '../hero/CountryMap'
 import ScrollIndicator from '../ui/ScrollIndicator'
 
 export default function HeroSection({ onOpenProject }) {
   const textRef = useRef(null)
-  const [mapVisible, setMapVisible] = useState(false)
-  const [selectedCountry, setSelectedCountry] = useState(null)
-  const [displayedCountry, setDisplayedCountry] = useState(null)
-  const [worldOpacity, setWorldOpacity] = useState(1)
-  const [countryOpacity, setCountryOpacity] = useState(0)
+  const [activeCountry, setActiveCountry] = useState(null)
+  const isMobile = window.innerWidth < 768
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (textRef.current) textRef.current.classList.add('visible')
-      setMapVisible(true)
     }, 300)
     return () => clearTimeout(timeout)
   }, [])
-
-  const handleSelectCountry = (code) => {
-    setSelectedCountry(code)
-    setDisplayedCountry(code)
-    // Fade out WorldMap y fade in CountryMap simultáneamente
-    setWorldOpacity(0)
-    setCountryOpacity(1)
-  }
-
-  const [worldKey, setWorldKey] = useState(0)
-
-  const handleBack = () => {
-    setWorldOpacity(1)
-    setCountryOpacity(0)
-    setWorldKey((prev) => prev + 1) // ← fuerza redibujado
-    setTimeout(() => {
-      setSelectedCountry(null)
-      setDisplayedCountry(null)
-    }, 600)
-  }
-
-  const handleSelectProject = (projectId) => {
-    if (onOpenProject) onOpenProject(projectId)
-  }
 
   const handleScrollDown = () => {
     const next = document.querySelector('#arquitectonicos')
@@ -52,8 +23,7 @@ export default function HeroSection({ onOpenProject }) {
       container.scrollTo({ top: next.offsetTop, behavior: 'smooth' })
     } else {
       const rect = next.getBoundingClientRect()
-      const absoluteTop = window.scrollY + rect.top
-      window.scrollTo({ top: absoluteTop, behavior: 'smooth' })
+      window.scrollTo({ top: window.scrollY + rect.top, behavior: 'smooth' })
     }
   }
 
@@ -66,10 +36,8 @@ export default function HeroSection({ onOpenProject }) {
       height="100svh"
       overflow="hidden"
       bg="#0A0A0A"
-      display="flex"
-      flexDirection="column"
     >
-      {/* WorldMap — capa fija */}
+      {/* Mapa — con scroll horizontal en mobile */}
       <Box
         position="absolute"
         top="64px"
@@ -77,50 +45,39 @@ export default function HeroSection({ onOpenProject }) {
         right="0"
         bottom="0"
         zIndex={0}
-        opacity={mapVisible ? worldOpacity : 0}
-        transition="opacity 0.6s ease"
-        pointerEvents={selectedCountry ? 'none' : 'auto'}
+        overflowX={activeCountry ? 'hidden' : { base: 'auto', md: 'hidden' }}
+        overflowY="hidden"
       >
-        <WorldMap key={worldKey} onSelectCountry={handleSelectCountry} />
-      </Box>
-
-      {/* CountryMap — capa encima */}
-      {displayedCountry && (
         <Box
-          position="absolute"
-          top="64px"
-          left="0"
-          right="0"
-          bottom="0"
-          zIndex={1}
-          opacity={countryOpacity}
-          transition="opacity 0.6s ease"
-          pointerEvents={selectedCountry ? 'auto' : 'none'}
+          width={activeCountry ? '100%' : { base: '900px', md: '100%' }}
+          height="100%"
+          transition="width 0s"
         >
-          <CountryMap
-            countryCode={displayedCountry}
-            onSelectProject={handleSelectProject}
-            onBack={handleBack}
+          <WorldMap
+            onSelectProject={onOpenProject}
+            onCountryChange={setActiveCountry}
           />
         </Box>
-      )}
+      </Box>
 
-      {/* Overlay */}
+      {/* Overlay visual */}
       <Box
         position="absolute"
         inset="0"
-        zIndex={2}
+        zIndex={1}
         pointerEvents="none"
-        background="radial-gradient(ellipse at center, rgba(30,30,28,0.1) 0%, rgba(10,10,10,0.5) 100%)"
+        background="radial-gradient(ellipse at center, rgba(30,30,28,0.1) 0%, rgba(10,10,10,0.4) 100%)"
       />
 
-      {/* Título sección */}
-      {!selectedCountry && (
+      {/* Título — oculto cuando hay país activo */}
+      {!activeCountry && (
         <Box
+          ref={textRef}
           position="absolute"
           top={{ base: '24px', md: '40px' }}
           left={{ base: 6, md: 16, lg: 24 }}
           zIndex={3}
+          className="fade-up"
           pointerEvents="none"
         >
           <Text
@@ -145,8 +102,8 @@ export default function HeroSection({ onOpenProject }) {
         </Box>
       )}
 
-      {/* Zona inferior */}
-      {!selectedCountry && (
+      {/* Zona inferior — oculta cuando hay país activo */}
+      {!activeCountry && (
         <Box
           position="absolute"
           bottom="0"
